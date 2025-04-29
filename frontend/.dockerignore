@@ -1,0 +1,18 @@
+# Node modules (huge, not needed inside build context)
+node_modules
+
+# Environment files
+.env
+
+# Build output (we rebuild inside container)
+dist
+
+# System files
+*.log
+Dockerfile
+docker-compose.yml
+.git
+.gitignore
+.vscode
+.idea
+npm-debug.log

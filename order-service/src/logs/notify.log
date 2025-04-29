@@ -1,0 +1,22 @@
+2025-04-26T09:59:13.473Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cad52e2c4a297566c2c52","payment_id":"PH123456789","payhere_amount":"500.00","payhere_currency":"LKR","status_code":"2","md5sig":"YOUR_GENERATED_MD5SIG"}
+2025-04-26T09:59:13.478Z - 🔍 Looking for order with ID: 680cad52e2c4a297566c2c52
+2025-04-26T09:59:13.695Z - ✅ Payment success. Order updated: 680cad52e2c4a297566c2c52
+2025-04-26T10:17:37.040Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cb28ee2c4a297566c2d78","payment_id":"680cb28ee2c4a297566c2d78","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2","md5sig":"GENERATE_THIS_HASH_PROPERLY"}
+2025-04-26T10:17:37.407Z - 🔍 Looking for order with ID: 680cb28ee2c4a297566c2d78
+2025-04-26T10:17:37.609Z - ✅ Payment success. Order updated: 680cb28ee2c4a297566c2d78
+2025-04-26T10:22:39.289Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cb3b00273aae081881e4e","payment_id":"680cb3b00273aae081881e4e","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-26T10:22:39.290Z - ❌ Invalid MD5 signature detected.
+2025-04-26T10:33:58.121Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cb66effecd2af65e0eb63","payment_id":"680cb66effecd2af65e0eb63","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-26T10:33:58.471Z - ❌ Server error: secretBase64 is not defined
+2025-04-26T10:39:03.312Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cb7551d68313fdaf1e46e","payment_id":"680cb7551d68313fdaf1e46e","payhere_amount":"650.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-26T10:39:03.320Z - ❌ Server error: md5sig is not defined
+2025-04-26T10:41:03.799Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680cb822aa880b691130f224","payment_id":"680cb822aa880b691130f224","payhere_amount":"650.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-26T10:41:03.800Z - ❌ Invalid MD5 signature detected.
+2025-04-27T02:31:41.894Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680d96e056b3af5d7da8807d","payment_id":"680d96e056b3af5d7da8807d","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-27T02:31:41.895Z - ❌ Invalid MD5 signature detected.
+2025-04-27T03:06:44.314Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680d9f00b890f63d2555dae3","payment_id":"680d9f00b890f63d2555dae3","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-27T03:06:44.670Z - ❌ Invalid MD5 signature detected.
+2025-04-27T03:16:17.302Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680da1149109fdf8941d5db5","payment_id":"680da1149109fdf8941d5db5","payhere_amount":"450.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-27T03:16:17.303Z - ❌ Invalid MD5 signature detected.
+2025-04-27T04:26:48.850Z - 🚀 PayHere Notify Payload: {"merchant_id":"1230207","order_id":"680db1f1000ac880116b0402","payment_id":"680db1f1000ac880116b0402","payhere_amount":"1850.00","payhere_currency":"LKR","status_code":"2"}
+2025-04-27T04:26:49.221Z - ❌ Invalid MD5 signature detected.

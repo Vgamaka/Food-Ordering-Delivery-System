@@ -1,0 +1,60 @@
+version: '3.8'
+
+services:
+  auth-service:
+    build: ./auth-service
+    container_name: auth-service
+    ports:
+      - "3001:3001"
+    environment:
+      - PORT=3001
+      - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/authDB?retryWrites=true&w=majority
+      - JWT_SECRET=7fkd93Kejfskdjfh3947fKJDF983jdslf!@#$$%@3jkdfhsdfh9384
+      - JWT_EXPIRES_IN=1d
+
+  restaurant-service:
+    build: ./restaurant-service
+    container_name: restaurant-service
+    ports:
+      - "3002:3002"
+    environment:
+      - PORT=3002
+      - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/restaurantDB?retryWrites=true&w=majority
+
+  order-service:
+    build: ./order-service
+    container_name: order-service
+    ports:
+      - "3003:3003"
+    environment:
+      - PORT=3003
+      - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/orderDB?retryWrites=true&w=majority
+
+  delivery-service:
+    build: ./delivery-service
+    container_name: delivery-service
+    ports:
+      - "3009:3009"
+    environment:
+      - PORT=3009
+      - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/deliveryDB?retryWrites=true&w=majority
+
+  notification-service:
+    build: ./notification-service
+    container_name: notification-service
+    ports:
+      - "3010:3010"
+    environment:
+      - PORT=3010
+      - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/notificationDB?retryWrites=true&w=majority
+
+  frontend:
+    build: ./frontend
+    container_name: frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - auth-service
+      - restaurant-service
+      - order-service
+      - delivery-service
