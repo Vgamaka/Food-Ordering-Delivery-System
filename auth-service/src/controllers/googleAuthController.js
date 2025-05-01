@@ -24,8 +24,8 @@ exports.googleLogin = async (req, res) => {
         email,
         googleId,
         profilePicture: picture,
-        role: 'customer', // ✅ Default role
-        status: 'approved', // ✅ Google users are approved by default
+        role: 'customer', //  Default role
+        status: 'approved', // Google users are approved by default
       });
       await user.save();
     }

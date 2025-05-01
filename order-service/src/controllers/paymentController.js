@@ -6,13 +6,13 @@ const path = require("path");
 const { getUserById } = require("../services/userService");
 const { sendSMS } = require("../services/dialogSmsService");
 
-// ✅ LOG FUNCTION
+//  LOG FUNCTION
 const logToFile = (message) => {
   const logPath = path.join(__dirname, "../logs/notify.log");
   fs.appendFileSync(logPath, `${new Date().toISOString()} - ${message}\n`);
 };
 
-// ✅ CREATE HASH FOR PAYMENT INITIALIZATION
+//  CREATE HASH FOR PAYMENT INITIALIZATION
 exports.createPayHereHash = (req, res) => {
   const { order_id, amount, currency = "LKR" } = req.body;
   if (!order_id || !amount) {

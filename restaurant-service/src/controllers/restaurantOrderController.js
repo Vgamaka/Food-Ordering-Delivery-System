@@ -1,4 +1,3 @@
-// 📂 restaurant-service/src/controllers/restaurantOrderController.js
 
 const orderService = require("../services/orderService");
 
@@ -55,7 +54,6 @@ exports.rejectOrder = async (req, res) => {
       return res.status(404).json({ message: "Order not found" });
     }
 
-    // ⚡ Future improvement: Send notification to customer
 
     res.status(200).json({ message: "Order rejected successfully", order: updatedOrder });
   } catch (err) {

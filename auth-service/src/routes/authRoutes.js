@@ -19,8 +19,7 @@ const storage = multer.diskStorage({
 });
 const upload = multer({ storage });
 
-// Registration route (handle image)
-// Accept either `proofImage` or `licenseImage`
+
 const fileUpload = upload.fields([
     { name: "proofImage", maxCount: 1 },
     { name: "licenseImage", maxCount: 1 },

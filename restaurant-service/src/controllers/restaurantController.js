@@ -1,8 +1,7 @@
-const User = require("../models/User"); // Assuming you use 'User' for restaurant accounts
+const User = require("../models/User");
 const authService = require("../services/authService");
 const orderService = require("../services/orderService");
 
-// 📌 Register Restaurant (called from authRoutes with multer upload)
 exports.registerRestaurant = async (req, res) => {
   try {
     const { name, email, password, phone } = req.body;
@@ -15,7 +14,7 @@ exports.registerRestaurant = async (req, res) => {
     const newUser = new User({
       name,
       email,
-      password, // Hash this if not already hashed in middleware
+      password, 
       phone,
       role: "restaurant",
       status: "pending",
@@ -29,7 +28,6 @@ exports.registerRestaurant = async (req, res) => {
   }
 };
 
-// 📌 Get all approved restaurants (for customer side)
 exports.getAllApprovedRestaurants = async (req, res) => {
   try {
     const restaurants = await User.find({ role: "restaurant", status: "approved" });
@@ -38,23 +36,7 @@ exports.getAllApprovedRestaurants = async (req, res) => {
     res.status(500).json({ message: "Error fetching restaurants", error: err.message });
   }
 };
-// Get all orders for a restaurant (called by frontend)
-// exports.getRestaurantOrders = async (req, res) => {
-//   try {
-//     const { restaurantId } = req.query;
 
-//     if (!restaurantId) {
-//       return res.status(400).json({ message: "Restaurant ID is required" });
-//     }
-
-//     const orders = await orderService.getOrdersByRestaurant(restaurantId);
-//     res.status(200).json(orders);
-//   } catch (error) {
-//     console.error("Error fetching restaurant orders:", error.message);
-//     res.status(500).json({ message: "Failed to fetch restaurant orders", error: error.message });
-//   }
-// };
-// 📌 Get a single restaurant by ID (for menu pages)
 exports.getRestaurantById = async (req, res) => {
   try {
     const restaurant = await authService.getUserById(req.params.id);
@@ -70,7 +52,7 @@ exports.getRestaurantById = async (req, res) => {
   }
 };
 
-// 📌 Approve restaurant
+//  Approve restaurant
 exports.approveRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -81,7 +63,7 @@ exports.approveRestaurant = async (req, res) => {
   }
 };
 
-// 📌 Reject restaurant
+//  Reject restaurant
 exports.rejectRestaurant = async (req, res) => {
   try {
     const { id } = req.params;
@@ -92,7 +74,7 @@ exports.rejectRestaurant = async (req, res) => {
   }
 };
 
-// 📌 Update restaurant profile (optional feature)
+// Update restaurant profile 
 exports.updateRestaurantProfile = async (req, res) => {
   try {
     const { id } = req.params;

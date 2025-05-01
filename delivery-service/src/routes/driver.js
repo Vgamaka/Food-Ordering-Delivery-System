@@ -7,8 +7,8 @@ const multer = require('multer');
 const path = require('path');
 const axios = require('axios');
 
-// Environment variables
-const ORDER_SERVICE_URL = 'http://localhost:3003/api/orders'; // Order-service URL
+
+const ORDER_SERVICE_URL = 'http://localhost:3003/api/orders'; 
 
 // Setup multer for license photo uploads
 const storage = multer.diskStorage({

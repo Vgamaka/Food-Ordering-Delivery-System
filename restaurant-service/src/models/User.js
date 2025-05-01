@@ -66,7 +66,6 @@ const userSchema = new mongoose.Schema({
   }
 });
 
-// Create 2dsphere index for geolocation queries
 userSchema.index({ location: '2dsphere' });
 
 module.exports = mongoose.model('User', userSchema);

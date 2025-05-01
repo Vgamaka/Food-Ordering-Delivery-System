@@ -12,7 +12,7 @@ exports.registerUser = async (req, res) => {
       if (typeof location === "string") {
         parsedLocation = JSON.parse(location);
       } else {
-        parsedLocation = location; // already an object
+        parsedLocation = location; 
       }
     }
 
@@ -222,7 +222,6 @@ exports.deleteUser = async (req, res) => {
   }
 };
 
-// PUT /api/auth/restaurant/:id/status
 exports.updateRestaurantStatus = async (req, res) => {
   try {
     const { id } = req.params;
@@ -245,7 +244,7 @@ exports.updateRestaurantStatus = async (req, res) => {
   }
 };
 
-// GET /api/auth/users/:id
+
 exports.getUserById = async (req, res) => {
   try {
     const { id } = req.params;
@@ -267,7 +266,7 @@ exports.deleteUser = async (req, res) => {
     return res.status(500).json({ message: "Failed to delete user", error: err.message });
   }
 };
-// Update full restaurant profile
+
 exports.updateRestaurantProfile = async (req, res) => {
   try {
     const { id } = req.params;
@@ -322,7 +321,6 @@ exports.updateRestaurantProfile = async (req, res) => {
   }
 };
 
-// src/controllers/authController.js
 exports.updateUserProfile = async (req, res) => {
   const { id } = req.params;
   const updateData = req.body;

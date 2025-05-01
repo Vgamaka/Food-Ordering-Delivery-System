@@ -28,7 +28,7 @@ const getToken = async () => {
       throw new Error('Dialog SMS Auth Failed: ' + response.data.comment);
     }
   } catch (error) {
-    console.error('❌ Error getting SMS token:', error.message);
+    console.error(' Error getting SMS token:', error.message);
     throw error;
   }
 };
@@ -52,12 +52,12 @@ const sendSMS = async (mobile, message) => {
     });
 
     if (response.data.status === 'success') {
-      console.log(`✅ SMS sent successfully to ${mobile}`);
+      console.log(` SMS sent successfully to ${mobile}`);
     } else {
-      console.error('❌ SMS failed:', response.data.comment);
+      console.error(' SMS failed:', response.data.comment);
     }
   } catch (error) {
-    console.error('❌ Error sending SMS:', error.message);
+    console.error(' Error sending SMS:', error.message);
   }
 };
 

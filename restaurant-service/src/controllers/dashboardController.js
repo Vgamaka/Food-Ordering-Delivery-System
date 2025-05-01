@@ -1,4 +1,3 @@
-// 📂 restaurant-service/src/controllers/dashboardController.js
 
 const orderService = require("../services/orderService");
 
@@ -10,10 +9,9 @@ exports.getDashboardStats = async (req, res) => {
       return res.status(400).json({ message: "Missing restaurantId" });
     }
 
-    // 🛠 Fetch orders via service
     const orders = await orderService.getOrdersByRestaurant(restaurantId);
 
-    // ⚡ Business Logic
+    // Business Logic
     const validOrders = orders.filter(o => o.orderStatus !== "cancelled" && o.orderStatus !== "rejected");
     const totalOrders = validOrders.length;
 
@@ -22,7 +20,7 @@ exports.getDashboardStats = async (req, res) => {
 
     const totalRevenue = validOrders.reduce((sum, o) => sum + (o.totalAmount || 0), 0);
 
-    // ⚡ Popular Dishes
+    //  Popular Dishes
     const dishCounts = {};
     orders.forEach(order => {
       order.items.forEach(item => {
@@ -58,7 +56,7 @@ exports.getChartData = async (req, res) => {
       return res.status(400).json({ message: "Missing restaurantId" });
     }
 
-    // 🛠 Fetch orders via service
+    //  Fetch orders via service
     const orders = await orderService.getOrdersByRestaurant(restaurantId);
 
     const now = new Date();

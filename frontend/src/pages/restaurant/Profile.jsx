@@ -160,13 +160,6 @@ export default function Profile() {
           </label>
         </div>
 
-        <Button
-              size="xl"
-              onClick={handleLogout}
-              className="w-full md:w-auto rounded-xl bg-gradient-to-r from-blue-400 to-indigo-500 text-black font-semibold shadow-lg hover:shadow-2xl transition-all duration-300"
-            >
-              Logout
-            </Button>
         {/* Profile Form */}
         <form className="space-y-4">
           <div>

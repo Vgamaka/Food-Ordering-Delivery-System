@@ -3,10 +3,10 @@ const mongoose = require('mongoose');
 const userSchema = new mongoose.Schema({
   name: { type: String, required: true },
   email: { type: String, required: true, unique: true, lowercase: true },
-  password: { type: String }, // ✅ Now optional for Google login
-  googleId: { type: String }, // ✅ Add Google ID
-  profilePicture: { type: String }, // ✅ Add profile picture from Google
-
+  password: { type: String }, 
+  googleId: { type: String }, 
+  profilePicture: { type: String },
+  
   phone: { type: String },
   role: {
     type: String,

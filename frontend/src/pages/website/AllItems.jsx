@@ -423,9 +423,9 @@ const AllItems = () => {
 
                   <div className="p-5">
                     <div className="relative h-48 overflow-hidden rounded-lg mb-4 group">
-                      <img
-                        src={`${import.meta.env.VITE_RESTAURANT_SERVICE_URL.replace("/api/restaurant", "")}/uploads/${item.image}`}
-                        alt={item.name}
+                    <img
+                      src={`http://localhost:3002/uploads/${item.image}`}
+                      alt={item.name}
                         className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
                       />
 

@@ -1,5 +1,4 @@
 
-// Allow only specific roles to access route
 const restrictTo = (...allowedRoles) => {
     return (req, res, next) => {
       const userRole = req.user?.role;

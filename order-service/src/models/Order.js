@@ -31,14 +31,13 @@ const orderSchema = new mongoose.Schema(
       required: true,
     },
     deliveryFee: {
-      type: Number,                        //  Add delivery fee field
+      type: Number,                       
       required: true,
-      default: 250,                        //  Default Rs. 250
+      default: 250,
     },
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "unpaid"], //  Correct enum for payment status
-      default: "pending",
+      enum: ["pending", "paid", "failed", "unpaid"], 
     },
     paymentMethod: {
       type: String,

@@ -5,13 +5,13 @@ const connectDB = async () => {
     await mongoose.connect(process.env.MONGO_URI, {
       useNewUrlParser: true,
       useUnifiedTopology: true,
-      tls: true,                            // ⭐ Important: Use TLS instead of SSL
-      tlsAllowInvalidCertificates: true,    // ⭐ Allow inside Docker if certificates mismatch
+      tls: true,                            
+      tlsAllowInvalidCertificates: true,    
     });
 
-    console.log(`✅ MongoDB Connected: ${mongoose.connection.host}`);
+    console.log(` MongoDB Connected: ${mongoose.connection.host}`);
   } catch (error) {
-    console.error(`❌ MongoDB connection error: ${error.message}`);
+    console.error(` MongoDB connection error: ${error.message}`);
     process.exit(1);
   }
 };
