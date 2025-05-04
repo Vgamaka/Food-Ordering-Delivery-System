@@ -93,16 +93,16 @@ export default function DriverRegister() {
           </p>
           <div className="mt-4">
             <span className="text-gray-600">Already registered? </span>
-            <Link to="/driver/login" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+            <Link to="/driver/login" className="font-medium text-red-600 hover:text-red-500 transition-colors">
               Sign in to your account
             </Link>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 md:px-10">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-8 md:px-10">
             <h3 className="text-xl font-medium text-white">Driver Registration</h3>
-            <p className="mt-1 text-blue-100">Please fill in your details below</p>
+            <p className="mt-1 text-red-100">Please fill in your details below</p>
           </div>
 
           <div className="px-6 py-8 md:px-10">
@@ -131,7 +131,7 @@ export default function DriverRegister() {
                     required
                     value={form.name}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="Enter your full name"
                   />
                 </div>
@@ -144,7 +144,7 @@ export default function DriverRegister() {
                     required
                     value={form.email}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="your.email@example.com"
                   />
                 </div>
@@ -157,7 +157,7 @@ export default function DriverRegister() {
                     required
                     value={form.phone}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="10-digit mobile number"
                   />
                 </div>
@@ -170,7 +170,7 @@ export default function DriverRegister() {
                     required
                     value={form.vehicleNumber}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="Enter vehicle number"
                   />
                 </div>
@@ -183,7 +183,7 @@ export default function DriverRegister() {
                     required
                     value={form.password}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="Create a strong password"
                   />
                 </div>
@@ -196,7 +196,7 @@ export default function DriverRegister() {
                     required
                     value={form.confirmPassword}
                     onChange={handleChange}
-                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="mt-1 block w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="Confirm your password"
                   />
                 </div>
@@ -206,7 +206,7 @@ export default function DriverRegister() {
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Driver License Photo
                 </label>
-                <div className="mt-1 flex justify-center px-6 py-8 border-2 border-gray-300 border-dashed rounded-lg hover:border-blue-500 transition-colors">
+                <div className="mt-1 flex justify-center px-6 py-8 border-2 border-gray-300 border-dashed rounded-lg hover:border-red-500 transition-colors">
                   <div className="space-y-2 text-center">
                     {preview ? (
                       <div className="relative inline-block">
@@ -244,7 +244,7 @@ export default function DriverRegister() {
                           />
                         </svg>
                         <div className="flex text-sm text-gray-600 justify-center">
-                          <label className="relative cursor-pointer bg-white rounded-md font-medium text-blue-600 hover:text-blue-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-blue-500">
+                          <label className="relative cursor-pointer bg-white rounded-md font-medium text-red-600 hover:text-red-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-red-500">
                             <span>Upload a file</span>
                             <input
                               type="file"
@@ -267,10 +267,10 @@ export default function DriverRegister() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full flex justify-center items-center px-6 py-3.5 border border-transparent text-base font-medium rounded-lg text-white transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                  className={`w-full flex justify-center items-center px-6 py-3.5 border border-transparent text-base font-medium rounded-lg text-white transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${
                     loading
-                      ? 'bg-blue-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg'
+                      ? 'bg-red-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg'
                   }`}
                 >
                   {loading ? (
@@ -292,11 +292,11 @@ export default function DriverRegister() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           By registering, you agree to our{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="#" className="font-medium text-red-600 hover:text-red-500">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="#" className="font-medium text-red-600 hover:text-red-500">
             Privacy Policy
           </a>
         </p>
