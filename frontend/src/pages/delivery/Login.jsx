@@ -51,16 +51,16 @@ export default function DriverLogin() {
           <p className="mt-3 text-gray-600">Sign in to your delivery partner account</p>
           <div className="mt-4">
             <span className="text-gray-600">New to our platform? </span>
-            <Link to="/register" className="font-medium text-blue-600 hover:text-blue-500 transition-colors">
+            <Link to="/register/driver" className="font-medium text-red-600 hover:text-red-500 transition-colors">
               Create an account
             </Link>
           </div>
         </div>
 
         <div className="bg-white rounded-2xl shadow-xl overflow-hidden">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8 md:px-10">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-8 md:px-10">
             <h3 className="text-xl font-medium text-white">Driver Login</h3>
-            <p className="mt-1 text-blue-100">Enter your credentials to access your account</p>
+            <p className="mt-1 text-red-100">Enter your credentials to access your account</p>
           </div>
 
           <div className="px-6 py-8 md:px-10">
@@ -90,7 +90,7 @@ export default function DriverLogin() {
                   required
                   value={form.email}
                   onChange={handleChange}
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                   placeholder="your.email@example.com"
                 />
               </div>
@@ -106,7 +106,7 @@ export default function DriverLogin() {
                     required
                     value={form.password}
                     onChange={handleChange}
-                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                    className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     placeholder="Enter your password"
                   />
                   <button
@@ -127,10 +127,10 @@ export default function DriverLogin() {
                 <button
                   type="submit"
                   disabled={loading}
-                  className={`w-full flex justify-center items-center px-6 py-3.5 border border-transparent text-base font-medium rounded-lg text-white transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 ${
+                  className={`w-full flex justify-center items-center px-6 py-3.5 border border-transparent text-base font-medium rounded-lg text-white transition-all transform hover:scale-[1.02] focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 ${
                     loading
-                      ? 'bg-blue-400 cursor-not-allowed'
-                      : 'bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 shadow-lg'
+                      ? 'bg-red-400 cursor-not-allowed'
+                      : 'bg-gradient-to-r from-red-600 to-red-700 hover:from-red-700 hover:to-red-800 shadow-lg'
                   }`}
                 >
                   {loading ? (
@@ -152,11 +152,11 @@ export default function DriverLogin() {
 
         <p className="mt-6 text-center text-sm text-gray-500">
           By signing in, you agree to our{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="#" className="font-medium text-red-600 hover:text-red-500">
             Terms of Service
           </a>{' '}
           and{' '}
-          <a href="#" className="font-medium text-blue-600 hover:text-blue-500">
+          <a href="#" className="font-medium text-red-600 hover:text-red-500">
             Privacy Policy
           </a>
         </p>

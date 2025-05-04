@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { GoogleMap, Marker, DirectionsRenderer, useJsApiLoader } from '@react-google-maps/api';
 import { toast } from 'react-toastify';
-import { fetchOrdersByDriver, assignOrderToDriver, updateOrderStatus } from '../../services/driverService';
+import { fetchOrdersByDriver, assignOrderToDriver, updateOrderStatus, fetchDriverProfile } from '../../services/driverService';
 
 const containerStyle = {
   width: '100%',
@@ -27,6 +27,7 @@ const DriverOrders = () => {
   const [directions, setDirections] = useState(null);
   const [driverLocation, setDriverLocation] = useState(null);
   const [expandedOrders, setExpandedOrders] = useState({});
+  const [driverAvailability, setDriverAvailability] = useState(true);
 
   const navigate = useNavigate();
 
@@ -59,6 +60,25 @@ const DriverOrders = () => {
     const locationInterval = setInterval(getCurrentLocation, 60000);
     return () => clearInterval(locationInterval);
   }, [getCurrentLocation]);
+
+  // Fetch driver profile to get availability status
+  const fetchDriverInfo = async () => {
+    const driverId = localStorage.getItem('driverId');
+    if (!driverId) {
+      navigate('/login');
+      return;
+    }
+
+    try {
+      const driverData = await fetchDriverProfile(driverId);
+      setDriverAvailability(driverData.availability);
+      return driverData.availability;
+    } catch (err) {
+      console.error("Error fetching driver profile:", err);
+      toast.error("Failed to fetch your profile");
+      return null;
+    }
+  };
 
   const calculateDirections = useCallback(async (destination) => {
     if (!driverLocation) {
@@ -111,10 +131,18 @@ const DriverOrders = () => {
 
     try { 
       setLoading(true); 
-      console.log('Driver ID:', driverId); // Debug log 
+      // Ensure we have the latest availability status
+      const isAvailable = await fetchDriverInfo();
+      
       const ordersData = await fetchOrdersByDriver(driverId); 
       console.log('Raw orders from API:', ordersData); // Debug log 
       setOrders(ordersData); 
+      
+      // If driver is unavailable and trying to view available orders, switch to ongoing tab
+      if (isAvailable === false && activeTab === 'available') {
+        setActiveTab('ongoing');
+        toast.info('You are currently unavailable. Set yourself to available to see new orders.');
+      }
     } catch (err) { 
       console.error("Error fetching orders:", err); 
       toast.error("Failed to fetch orders"); 
@@ -136,21 +164,27 @@ const DriverOrders = () => {
       navigate('/login');
       return;
     }
+    
+    // Check if driver is available before trying to accept
+    if (!driverAvailability) {
+      toast.error('You must set your status to Available before accepting orders');
+      return;
+    }
   
     try {
       setActionLoading(orderId);
-      await assignOrderToDriver(orderId, driverId); // ✅ Pass driverId
+      await assignOrderToDriver(orderId, driverId);
       toast.success('Order accepted successfully');
       fetchOrders();
     } catch (err) {
       console.error('Error assigning order:', err);
-      toast.error(err.response?.data?.message || 'Failed to accept order');
+      const errorMessage = err.response?.data?.message || 'Failed to accept order';
+      toast.error(errorMessage);
     } finally {
       setActionLoading('');
     }
   };
   
-
   const handleStatusUpdate = async (orderId, newStatus) => { 
     try { 
       setActionLoading(orderId); 
@@ -184,25 +218,27 @@ const DriverOrders = () => {
   };
 
   const filterOrders = () => {
-    console.log('Current orders state:', orders); // Debug log
-    console.log('Current tab:', activeTab);
+    // No need to show available orders tab if driver isn't available
+    if (activeTab === 'available' && !driverAvailability) {
+      return [];
+    }
     
     let filteredOrders;
     if (activeTab === 'available') {
       filteredOrders = orders.filter(order => 
         order.orderStatus === 'ready' && !order.assignedDriverId
       );
-      console.log('Available orders:', filteredOrders); // Debug log
+      console.log('Available orders:', filteredOrders);
     } else if (activeTab === 'ongoing') {
       filteredOrders = orders.filter(order => 
         ['accepted', 'onTheWay'].includes(order.orderStatus)
       );
-      console.log('Ongoing orders:', filteredOrders); // Debug log
+      console.log('Ongoing orders:', filteredOrders);
     } else {
       filteredOrders = orders.filter(order => 
         ['delivered', 'cancelled'].includes(order.orderStatus)
       );
-      console.log('Completed orders:', filteredOrders); // Debug log
+      console.log('Completed orders:', filteredOrders);
     }
     return filteredOrders;
   };
@@ -408,19 +444,42 @@ const DriverOrders = () => {
             <h2 className="text-xl sm:text-3xl font-bold text-red-800">Delivery Orders</h2>
             <p className="text-sm text-black-600">Manage and track your delivery orders</p>
           </div>
-          <button 
-            onClick={() => navigate('/driverProfile')}
-            className="px-3 py-1.5 text-sm font-medium text-blue-600 hover:text-blue-700"
-          >
-            Back to Profile
-          </button>
+          <div className="flex flex-col sm:flex-row gap-2">
+            <div className="flex items-center">
+              {/* Enhanced attention-grabbing status indicator */}
+              <div className={`flex items-center px-3 py-1.5 rounded-full ${
+                driverAvailability 
+                ? 'bg-green-100 border border-green-300 animate-pulse' 
+                : 'bg-red-100 border border-red-300'
+              }`}>
+                <div className={`h-2.5 w-2.5 rounded-full mr-2 ${
+                  driverAvailability ? 'bg-green-500' : 'bg-red-500'
+                }`}></div>
+                <span className={`font-medium text-sm ${
+                  driverAvailability ? 'text-green-700' : 'text-red-700'
+                }`}>
+                  Status: {driverAvailability ? 'Available' : 'Unavailable'}
+                </span>
+              </div>
+            </div>
+            {/* Enhanced "Back to Profile" button */}
+            <button 
+              onClick={() => navigate('/driverProfile')}
+              className="px-4 py-1.5 text-sm font-medium bg-red-700 text-white rounded-lg shadow-sm hover:bg-blue-700 transition-colors flex items-center"
+            >
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 mr-1.5" viewBox="0 0 20 20" fill="currentColor">
+                <path fillRule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clipRule="evenodd" />
+              </svg>
+              Back to Profile
+            </button>
+          </div>
         </div>
 
         <div className="bg-white rounded-lg shadow-sm mb-4">
           <div className="border-b">
             <nav className="flex -mb-px overflow-x-auto">
               {[
-                { id: 'available', label: 'Available', count: orders.filter(o => o.orderStatus === 'confirmed').length },
+                { id: 'available', label: 'Available', count: driverAvailability ? orders.filter(o => o.orderStatus === 'ready' && !o.assignedDriverId).length : 0 },
                 { id: 'ongoing', label: 'Ongoing', count: orders.filter(o => ['accepted', 'onTheWay'].includes(o.orderStatus)).length },
                 { id: 'completed', label: 'Completed', count: orders.filter(o => ['delivered', 'cancelled'].includes(o.orderStatus)).length }
               ].map(tab => (
@@ -431,7 +490,8 @@ const DriverOrders = () => {
                     activeTab === tab.id
                       ? 'border-blue-500 text-blue-600'
                       : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                  }`}
+                  } ${tab.id === 'available' && !driverAvailability ? 'opacity-50 cursor-not-allowed' : ''}`}
+                  disabled={tab.id === 'available' && !driverAvailability}
                 >
                   {tab.label}
                   {tab.count > 0 && (
@@ -449,6 +509,33 @@ const DriverOrders = () => {
           </div>
         </div>
 
+        {/* Driver Unavailable Warning */}
+        {!driverAvailability && activeTab === 'available' && (
+          <div className="bg-yellow-50 text-yellow-800 p-4 rounded-lg shadow-sm mb-4">
+            <div className="flex">
+              <div className="flex-shrink-0">
+                <svg className="h-5 w-5 text-yellow-400" viewBox="0 0 20 20" fill="currentColor">
+                  <path fillRule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clipRule="evenodd" />
+                </svg>
+              </div>
+              <div className="ml-3">
+                <h3 className="text-sm font-medium">You are currently unavailable</h3>
+                <p className="text-sm mt-1">
+                  To see and accept new orders, please set your status to "Available" in your profile.
+                </p>
+                <div className="mt-2">
+                  <button 
+                    onClick={() => navigate('/driverProfile')}
+                    className="text-sm font-medium text-yellow-700 hover:text-yellow-600 underline"
+                  >
+                    Go to Profile
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col lg:flex-row gap-4">
           <div className="lg:w-1/2 space-y-3">
             {loading ? (
@@ -465,8 +552,12 @@ const DriverOrders = () => {
               </div>
             ) : filterOrders().length === 0 ? (
               <div className="bg-white rounded-lg shadow-sm p-4 text-center">
-                <p className="text-gray-500">No {activeTab} orders found</p>
-                {activeTab === 'available' && (
+                {activeTab === 'available' && !driverAvailability ? (
+                  <p className="text-gray-500">You must set your status to "Available" to see new orders</p>
+                ) : (
+                  <p className="text-gray-500">No {activeTab} orders found</p>
+                )}
+                {activeTab === 'available' && driverAvailability && (
                   <p className="text-xs text-gray-400 mt-1">Check back later for new orders</p>
                 )}
               </div>
