@@ -80,7 +80,7 @@ export default function DriverProfile() {
   if (!driver) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-4 border-blue-600 border-t-transparent"></div>
+        <div className="animate-spin rounded-full h-12 w-12 border-4 border-red-600 border-t-transparent"></div>
       </div>
     );
   }
@@ -90,16 +90,16 @@ export default function DriverProfile() {
       <div className="max-w-3xl mx-auto">
         {/* Header Card */}
         <div className="bg-white rounded-2xl shadow-lg overflow-hidden mb-6">
-          <div className="bg-gradient-to-r from-blue-600 to-blue-700 px-6 py-8">
+          <div className="bg-gradient-to-r from-red-600 to-red-700 px-6 py-8">
             <div className="flex justify-between items-start">
               <div className="text-white">
                 <h1 className="text-3xl font-bold">Driver Profile</h1>
-                <p className="mt-1 text-blue-100">Manage your delivery profile and settings</p>
+                <p className="mt-1 text-red-100">Manage your delivery profile and settings</p>
               </div>
               <div className="flex gap-3">
                 <button
                   onClick={() => navigate('/delivery/orders')}
-                  className="px-4 py-2 text-sm font-medium bg-white/10 text-white rounded-lg hover:bg-white/20 transition"
+                  className="px-4 py-2 text-sm font-medium bg-white/90 text-red rounded-lg hover:bg-white/20 transition"
                 >
                   Orders
                 </button>
@@ -118,7 +118,7 @@ export default function DriverProfile() {
             <div className="flex items-center justify-between">
               <div>
                 <h2 className="text-lg font-semibold text-gray-900">Delivery Status</h2>
-                <p className="text-sm text-gray-500 mt-0.5">Toggle your availability for new orders</p>
+                <p className="text-sm text-gray-500 mt-0.5">Turn ON Availability for New Orders</p>
               </div>
               <label className="flex items-center cursor-pointer">
                 <div className="relative">
@@ -155,7 +155,7 @@ export default function DriverProfile() {
                       type="text"
                       value={form.name}
                       onChange={(e) => setForm({ ...form, name: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     />
                   </div>
                   <div>
@@ -164,7 +164,7 @@ export default function DriverProfile() {
                       type="email"
                       value={form.email}
                       onChange={(e) => setForm({ ...form, email: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     />
                   </div>
                   <div>
@@ -173,7 +173,7 @@ export default function DriverProfile() {
                       type="tel"
                       value={form.phone}
                       onChange={(e) => setForm({ ...form, phone: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     />
                   </div>
                   <div>
@@ -182,7 +182,7 @@ export default function DriverProfile() {
                       type="text"
                       value={form.vehicleNumber}
                       onChange={(e) => setForm({ ...form, vehicleNumber: e.target.value })}
-                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent transition"
+                      className="w-full px-4 py-2.5 border border-gray-300 rounded-lg focus:ring-2 focus:ring-red-500 focus:border-transparent transition"
                     />
                   </div>
                 </div>
@@ -195,7 +195,7 @@ export default function DriverProfile() {
                   </button>
                   <button
                     onClick={handleUpdate}
-                    className="px-6 py-2.5 text-sm font-medium text-white bg-blue-600 rounded-lg hover:bg-blue-700 transition"
+                    className="px-6 py-2.5 text-sm font-medium text-white bg-red-600 rounded-lg hover:bg-red-700 transition"
                   >
                     Save Changes
                   </button>
@@ -207,7 +207,7 @@ export default function DriverProfile() {
                   <h3 className="text-lg font-semibold text-gray-900">Personal Information</h3>
                   <button
                     onClick={() => setIsEditing(true)}
-                    className="px-4 py-2 text-sm font-medium text-blue-600 hover:text-blue-700 transition"
+                    className="px-4 py-2 text-sm font-medium text-red-600 hover:text-red-700 transition"
                   >
                     Edit Profile
                   </button>
