@@ -24,30 +24,26 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields or invalid delivery location" });
     }
 
+    // ✅ Fetch AUTH_SERVICE_URL dynamically after .env is loaded
+    const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://localhost:3001/api/auth";
+    console.log("🔧 AUTH_SERVICE_URL:", AUTH_SERVICE_URL);
+    
     let restaurant;
-
-    // ✅ Use fallback sample data in dev environment
-    if (process.env.NODE_ENV === "development") {
-      console.log("⚠️ Using mock restaurant location for development/testing.");
-      restaurant = {
-        name: "Mock Restaurant",
-        location: {
-          type: "Point",
-          coordinates: [80.123456, 7.123456], // Longitude, Latitude
-        },
-      };
-    } else {
-      // Attempt to fetch real restaurant from auth service
-      try {
-        const restaurantResponse = await axios.get(`${process.env.AUTH_SERVICE_URL}/users/${restaurantId}`);
-        restaurant = restaurantResponse.data;
-      } catch (fetchError) {
-        console.error("❌ Failed to fetch restaurant data:", fetchError.message);
-        return res.status(500).json({ message: "Failed to fetch restaurant information" });
-      }
+    try {
+          const url = `${AUTH_SERVICE_URL}/users/${restaurantId}`;
+          console.log("🌐 Fetching restaurant from:", url);
+          const restaurantResponse = await axios.get(url);
+          restaurant = restaurantResponse.data;
+        } catch (fetchError) {
+          console.error("❌ Failed to fetch restaurant data:", fetchError.message);
+          return res.status(500).json({ message: "Failed to fetch restaurant information" });
+        }
+    
+    if (!restaurant?.location?.coordinates?.length) {
+      return res.status(400).json({ message: "Restaurant location not found or invalid" });
     }
 
-    // Format restaurant location
+    // ✅ Format locations
     const formattedRestaurantLocation = {
       type: "Point",
       coordinates: restaurant.location.coordinates,
@@ -172,6 +168,19 @@ exports.updateOrderStatusDirect = async (req, res) => {
 
     if (!updatedOrder) {
       return res.status(404).json({ message: "Order not found" });
+    }
+
+    // ✅ Send SMS when order is delivered
+    if (orderStatus === "delivered") {
+      try {
+        const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL || "http://localhost:3001/api/auth";
+        const customerRes = await axios.get(`${AUTH_SERVICE_URL}/users/${updatedOrder.customerId}`);
+        const customerPhone = customerRes.data.phone;
+        const message = `✅ Order Delivered\nThank you for ordering with DeliciousEats! 🍽️`;
+        await sendSMS(customerPhone, message);
+      } catch (smsError) {
+        console.error("⚠️ Failed to send delivery SMS:", smsError.message);
+      }
     }
 
     return res.status(200).json({ message: "Order status updated successfully", order: updatedOrder });

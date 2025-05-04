@@ -6,6 +6,7 @@ const orderRoutes = require("./routes/orderRoutes");
 
 // Load environment variables
 dotenv.config();
+console.log("🔧 AUTH_SERVICE_URL:", process.env.AUTH_SERVICE_URL);
 
 // Connect to MongoDB
 connectDB();
