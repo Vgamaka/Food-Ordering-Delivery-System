@@ -1,7 +1,7 @@
 const crypto = require("crypto");
 
-const MERCHANT_ID = process.env.PAYHERE_MERCHANT_ID;
-const MERCHANT_SECRET = process.env.PAYHERE_MERCHANT_SECRET;
+const MERCHANT_ID = process.env.PAYHERE_MERCHANT_ID || "1230207";
+const MERCHANT_SECRET = process.env.PAYHERE_MERCHANT_SECRET ||  "MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw==";
 
 const generatePayHereHash = (orderId, amount, currency = "LKR") => {
   const formattedAmount = Number(amount).toFixed(2);

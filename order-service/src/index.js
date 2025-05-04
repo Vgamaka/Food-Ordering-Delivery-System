@@ -3,7 +3,6 @@ const cors = require("cors");
 const dotenv = require("dotenv");
 const connectDB = require("./config/db");
 const orderRoutes = require("./routes/orderRoutes");
-const paymentRoutes = require("./routes/paymentRoutes");
 
 // Load environment variables
 dotenv.config();
@@ -40,7 +39,6 @@ app.use(express.json());
 
 // Routes
 app.use("/api/orders", orderRoutes);
-app.use("/api/order", paymentRoutes);
 
 // Health Check Route
 app.get("/", (req, res) => res.send("✅ Order Service is running"));

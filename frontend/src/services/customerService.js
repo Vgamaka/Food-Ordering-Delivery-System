@@ -54,19 +54,11 @@ export const cancelOrder = async (orderId) => {
 
 // Update order after payment (PayHere success callback)
 export const updateOrderStatusAfterPayment = async (orderId, updateData) => {
-  const res = await orderAPI.patch(`/orders/${orderId}/update-status`, updateData);
+  const res = await orderAPI.patch(`/${orderId}/update-status`, updateData);
   return res.data;
 };
 
-// ============================================
-// 📦 PAYMENTS SECTION
-// ============================================
 
-// Generate hash for PayHere payment
-export const generatePayHereHash = async (paymentData) => {
-  const res = await orderAPI.post("/order/payhere-hash", paymentData);
-  return res.data;
-};
 
 // ============================================
 // 📦 CUSTOMER PROFILE SECTION

@@ -1,10 +1,7 @@
 const Order = require("../models/Order");
 const axios = require("axios");
-const { sendSMS } = require("../services/dialogSmsService");
-
+const { sendSMS } = require("../services/notificationService");
 const AUTH_SERVICE_URL = process.env.AUTH_SERVICE_URL;
-
-
 
 exports.createOrder = async (req, res) => {
   try {
@@ -16,6 +13,7 @@ exports.createOrder = async (req, res) => {
       paymentMethod,
       deliveryAddress,
       deliveryLocation,
+      phone
     } = req.body;
 
     const DELIVERY_FEE = 250;
@@ -26,15 +24,30 @@ exports.createOrder = async (req, res) => {
       return res.status(400).json({ message: "Missing required fields or invalid delivery location" });
     }
 
-    //  Fetch restaurant location safely
-    const restaurantResponse = await axios.get(`${process.env.AUTH_SERVICE_URL}/users/${restaurantId}`);
-    const restaurant = restaurantResponse.data;
+    let restaurant;
 
-    if (!restaurant || !restaurant.location || !restaurant.location.coordinates) {
-      return res.status(400).json({ message: "Restaurant location not found or invalid" });
+    // ✅ Use fallback sample data in dev environment
+    if (process.env.NODE_ENV === "development") {
+      console.log("⚠️ Using mock restaurant location for development/testing.");
+      restaurant = {
+        name: "Mock Restaurant",
+        location: {
+          type: "Point",
+          coordinates: [80.123456, 7.123456], // Longitude, Latitude
+        },
+      };
+    } else {
+      // Attempt to fetch real restaurant from auth service
+      try {
+        const restaurantResponse = await axios.get(`${process.env.AUTH_SERVICE_URL}/users/${restaurantId}`);
+        restaurant = restaurantResponse.data;
+      } catch (fetchError) {
+        console.error("❌ Failed to fetch restaurant data:", fetchError.message);
+        return res.status(500).json({ message: "Failed to fetch restaurant information" });
+      }
     }
 
-    //  Format restaurant location correctly
+    // Format restaurant location
     const formattedRestaurantLocation = {
       type: "Point",
       coordinates: restaurant.location.coordinates,
@@ -62,6 +75,29 @@ exports.createOrder = async (req, res) => {
     });
 
     await newOrder.save();
+
+    // ✅ Send SMS after order is created
+    /*try {
+      const customerPhone = phone ; 
+      const itemList = items.map(item => `${item.name} x ${item.quantity}`).join(", ");
+      const message =
+        `ORDER CONFIRMATION\n` +
+        `-------------------------\n` +
+        `Items: ${itemList}\n` +
+        `Delivery Fee: Rs. ${DELIVERY_FEE}\n` +
+        `Total Amount: Rs. ${finalTotal}\n` +
+        `Payment Method: ${paymentMethod.toUpperCase()}\n` +
+        `Date & Time: ${new Date().toLocaleString()}\n` +
+        `-------------------------\n` +
+        `Thank you for ordering with Food Delivery App!`;
+
+      console.log("📤 SMS sending to:", customerPhone);
+      console.log("📤 SMS content:\n", message);
+
+      await sendSMS(customerPhone, message);
+    } catch (smsError) {
+      console.error("⚠️ SMS sending failed:", smsError.message);
+    }*/
 
 
     res.status(201).json({ message: "Order placed successfully", order: newOrder });
@@ -121,7 +157,7 @@ exports.updateOrderStatusDirect = async (req, res) => {
       updateFields.orderStatus = "rejected";
       updateFields.rejectionReason = rejectionReason || "No reason provided";
     }
-    else if (["ready", "onTheWay", "delivered", "cancelled"].includes(orderStatus)) {
+    else if (["confirmed","ready", "onTheWay", "delivered", "cancelled"].includes(orderStatus)) {
       updateFields.orderStatus = orderStatus;
     }
     else {

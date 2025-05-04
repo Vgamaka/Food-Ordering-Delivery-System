@@ -1,11 +1,11 @@
+// services/dialogSmsService.js
 const axios = require('axios');
 
 let cachedToken = null;
 let tokenExpiryTime = null;
 
-const username = process.env.DIALOG_SMS_USERNAME;
-const password = process.env.DIALOG_SMS_PASSWORD;
-const sourceAddress = process.env.DIALOG_SMS_SOURCE_ADDRESS || 'DSA academy'; // fallback default
+const username = 'drops';
+const password = 'Drops.123';
 
 const getToken = async () => {
   const now = Date.now();
@@ -28,7 +28,7 @@ const getToken = async () => {
       throw new Error('Dialog SMS Auth Failed: ' + response.data.comment);
     }
   } catch (error) {
-    console.error(' Error getting SMS token:', error.message);
+    console.error('❌ Error getting SMS token:', error.message);
     throw error;
   }
 };
@@ -39,8 +39,8 @@ const sendSMS = async (mobile, message) => {
     const transactionId = Date.now().toString() + Math.floor(Math.random() * 10000);
 
     const payload = {
-      msisdn: [{ mobile: mobile.replace(/^0/, '') }],
-      sourceAddress: sourceAddress,
+      msisdn: [{ mobile: mobile.replace(/^0/, '') }], // Remove leading 0
+      sourceAddress: 'DSA academy', // Optional: your mask name
       message,
       transaction_id: transactionId,
     };
@@ -52,12 +52,12 @@ const sendSMS = async (mobile, message) => {
     });
 
     if (response.data.status === 'success') {
-      console.log(` SMS sent successfully to ${mobile}`);
+      console.log(`✅ SMS sent successfully to ${mobile}`);
     } else {
-      console.error(' SMS failed:', response.data.comment);
+      console.error('❌ SMS failed:', response.data.comment);
     }
   } catch (error) {
-    console.error(' Error sending SMS:', error.message);
+    console.error('❌ Error sending SMS:', error.message);
   }
 };
 

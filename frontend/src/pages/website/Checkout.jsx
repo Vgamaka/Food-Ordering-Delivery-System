@@ -13,7 +13,8 @@ import {
 import { ChevronRight, MapPin, CreditCard, DollarSign, Truck, Check } from "lucide-react";
 import Navbar from "../../Components/NavBar";
 import Footer from "../../Components/Footer";
-import { placeOrder, generatePayHereHash , updateOrderStatusAfterPayment  } from "../../services/customerService";
+import { placeOrder , updateOrderStatusAfterPayment  } from "../../services/customerService";
+import {requestPayHereHash} from "../../services/paymentService";
 
 const mapContainerStyle = {
   width: "100%",
@@ -77,24 +78,33 @@ const Checkout = () => {
     if (!customer.location || !customer.location.coordinates) {
       return toast.warning("Please select a delivery location.");
     }
-
+  
     setLoading(true);
+  
     const itemsTotal = getTotal({ items });
     const totalWithDelivery = itemsTotal + deliveryFee;
-
+  
     const payload = {
       customerId: auth.user?.id,
       phone: auth.user?.phone,
       restaurantId,
-      items: items.map(i => ({ menuItemId: i._id, name: i.name, price: i.price, quantity: i.quantity })),
+      items: items.map(i => ({
+        menuItemId: i._id,
+        name: i.name,
+        price: i.price,
+        quantity: i.quantity,
+      })),
       totalAmount: itemsTotal,
       deliveryFee,
       deliveryAddress: customer.address,
       deliveryLocation: customer.location,
       paymentMethod,
-      status: "pending",
     };
-    
+  
+    // ✅ Log the payload
+    console.log("📦 Payload being sent:", payload);
+  
+    // ✅ COD Flow
     if (paymentMethod === "cod") {
       try {
         await placeOrder(payload);
@@ -102,76 +112,98 @@ const Checkout = () => {
         clearCart();
         navigate("/");
       } catch (err) {
+        console.error("❌ COD Order creation failed:", err.response?.data || err.message);
         toast.error("Failed to place order");
-        console.error(err);
       } finally {
         setLoading(false);
       }
-    } else if (paymentMethod === "card") {
-      try {
-        // ✅ First create the order
-        const orderResponse = await placeOrder(payload);
-        const savedOrderId = orderResponse.data.order._id;  // MongoDB ObjectId
-
-        const data = await generatePayHereHash(savedOrderId, totalWithDelivery);
-
-
-        const payment = {
-          sandbox: true,
-          merchant_id: "1230207",
-          return_url: "http://localhost:5173/payment-success",
-          cancel_url: "http://localhost:5173/payment-cancel",
-          notify_url: "",  // ✅ Not needed in your flow
-          order_id: savedOrderId,  // ✅ Your MongoDB _id
-          items: items.map(i => i.name).join(", "),
-          amount: totalWithDelivery.toFixed(2),
-          currency: "LKR",
-          hash: data.hash,
-          first_name: auth.user?.name || "",
-          last_name: "",
-          email: auth.user?.email || "test@example.com",
-          phone: auth.user?.phone || "",
-          address: customer.address || "",
-          city: "Colombo",
-          country: "Sri Lanka",
-        };
-
-        payhere.onCompleted = async function (payHereOrderId) {
-          try {
-            // ✅ Using savedOrderId (MongoDB _id) here
-            await updateOrderStatusAfterPayment(savedOrderId, {
-              paymentStatus: "paid",
-              orderStatus: "confirmed",
-              paymentId: payHereOrderId,
-            });            
-
-            toast.success(`Payment completed! Order ID: ${payHereOrderId}`);
-            clearCart();
-            navigate("/");
-          } catch (error) {
-            console.error("❌ Failed to update order status:", error);
-            toast.error("Payment succeeded but failed to update order status.");
-          }
-        };
-
-        payhere.onDismissed = function () {
-          toast.warning("Payment dismissed by user.");
-          setLoading(false);
-        };
-
-        payhere.onError = function (error) {
-          toast.error(`Payment error: ${error}`);
-          setLoading(false);
-        };
-
-        payhere.startPayment(payment);
-      } catch (err) {
-        toast.error("Failed to initiate payment.");
-        console.error(err);
-        setLoading(false);
+      return;
+    }
+  
+    // ✅ Card Payment Flow
+    try {
+      const orderResponse = await placeOrder(payload);
+      console.log("🧾 orderResponse received:", orderResponse);
+      const savedOrderId = orderResponse?.order?._id;
+  
+      if (!savedOrderId) {
+        throw new Error("Order ID not returned");
       }
+  
+      const { hash } = await requestPayHereHash(savedOrderId, totalWithDelivery);
+  
+      const payment = {
+        sandbox: true,
+        merchant_id: "1230207",
+        return_url: "http://localhost:5173/payment-success",
+        cancel_url: "http://localhost:5173/payment-cancel",
+        notify_url: "",
+        order_id: savedOrderId,
+        items: items.map(i => i.name).join(", "),
+        amount: totalWithDelivery.toFixed(2),
+        currency: "LKR",
+        hash,
+        first_name: auth.user?.name || "",
+        last_name: "",
+        email: auth.user?.email || "test@example.com",
+        phone: auth.user?.phone || "",
+        address: customer.address || "",
+        city: "Colombo",
+        country: "Sri Lanka",
+      };
+  
+      payhere.onCompleted = async function (payHereOrderId) {
+        try {
+          const updatePayload = {
+            paymentStatus: "paid",
+            orderStatus: "confirmed",
+            paymentId: payHereOrderId,
+          };
+      
+          console.log("🔁 Updating order with:", updatePayload, "Order ID:", savedOrderId);
+      
+          const updateResponse = await updateOrderStatusAfterPayment(savedOrderId, updatePayload);
+          console.log("✅ Order update response:", updateResponse);
+      
+          toast.success(`Payment completed! Order ID: ${payHereOrderId}`);
+          clearCart();
+          navigate("/");
+        } catch (error) {
+          console.error("❌ Failed to update order after payment:");
+          if (error.response) {
+            console.error("📨 Response Data:", JSON.stringify(error.response.data, null, 2));
+            console.error("📨 Status:", error.response.status);
+            console.error("📨 Headers:", error.response.headers);
+          } else if (error.request) {
+            console.error("📡 No response received:", error.request);
+          } else {
+            console.error("⚠️ Error Message:", error.message);
+          }
+        
+          toast.error("Payment succeeded but failed to confirm order.");
+        }
+        
+      };
+      
+  
+      payhere.onDismissed = function () {
+        toast.warning("Payment dismissed by user.");
+        setLoading(false);
+      };
+  
+      payhere.onError = function (error) {
+        toast.error(`Payment error: ${error}`);
+        setLoading(false);
+      };
+  
+      payhere.startPayment(payment);
+    } catch (err) {
+      console.error("❌ Failed to initiate card payment:", err.response?.data || err.message);
+      toast.error("Failed to initiate card payment.");
+      setLoading(false);
     }
   };
+  
 
   useEffect(() => {
     const fetchAddressFromCoords = async (lng, lat) => {
