@@ -1,20 +1,36 @@
-# Use official Node.js base image
-FROM node:20
+# ┌────────────── Stage 1: install dependencies ──────────────
+FROM node:20-alpine AS deps
 
-# Set working directory inside the container
-WORKDIR /app
+# where our app lives inside the container
+WORKDIR /usr/src/app
 
-# Copy package.json and package-lock.json if available
-COPY package*.json ./
+# only copy package manifests, install prod deps
+COPY package.json package-lock.json ./
+RUN npm ci --only=production
 
-# Install dependencies
-RUN npm install
+# ┌────────────── Stage 2: build final image ────────────────
+FROM node:20-alpine
 
-# Copy the rest of the application code
+WORKDIR /usr/src/app
+
+# copy prod deps from deps stage
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# copy app source
 COPY . .
 
-# Expose the port (use 3001 or read from .env)
+# set production env (disables dev-only code paths)
+ENV NODE_ENV=production
+
+# expose the port your app listens on
 EXPOSE 3001
 
-# Start the application
+# run as a non-root user for better security
+USER node
+
+# simple healthcheck (requires curl in the image; Alpine has it by default)
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3001/ || exit 1
+
+# start your app
 CMD ["node", "src/index.js"]

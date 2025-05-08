@@ -1,4 +1,4 @@
-# ------------------ MongoDB Deployment ------------------
+# ------------------ MongoDB Deployment & Service ------------------
 apiVersion: apps/v1
 kind: Deployment
 metadata:
@@ -16,6 +16,7 @@ spec:
       containers:
         - name: mongodb
           image: mongo:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 27017
           volumeMounts:
@@ -38,12 +39,12 @@ spec:
       targetPort: 27017
   type: ClusterIP
 
-# ------------------ Auth Service Deployment ------------------
+# ------------------ Auth Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: auth-service-deployment
+  name: auth-service
 spec:
   replicas: 1
   selector:
@@ -57,13 +58,24 @@ spec:
       containers:
         - name: auth-service
           image: auth-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3001
           env:
             - name: PORT
               value: "3001"
             - name: MONGO_URI
-              value: mongodb://mongodb-service:27017/authDB
+              value: "mongodb://mongodb-service:27017/authDB"
+            - name: JWT_EXPIRES_IN
+              value: "1d"
+            - name: JWT_SECRET
+              value: "7fkd93Kejfskdjfh3947fKJDF983jdslf!@#$$%@3jkdfhsdfh9384"
+            - name: NODE_ENV
+              value: "development"
+            - name: CORS_ORIGINS
+              value: "http://localhost:5173,http://localhost:3000"
+            - name: GOOGLE_CLIENT_ID
+              value: "335033738118-c5eiaqjoietnjncppvibs6k1vrnlncdv.apps.googleusercontent.com"
 
 ---
 apiVersion: v1
@@ -78,12 +90,12 @@ spec:
       targetPort: 3001
   type: ClusterIP
 
-# ------------------ Restaurant Service Deployment ------------------
+# ------------------ Restaurant Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: restaurant-service-deployment
+  name: restaurant-service
 spec:
   replicas: 1
   selector:
@@ -97,13 +109,22 @@ spec:
       containers:
         - name: restaurant-service
           image: restaurant-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3002
           env:
             - name: PORT
               value: "3002"
             - name: MONGO_URI
-              value: mongodb://mongodb-service:27017/restaurantDB
+              value: "mongodb://mongodb-service:27017/restaurantDB"
+            - name: ORDER_SERVICE_URL
+              value: "http://order-service:3003/api/orders"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:3001/api/auth"
+            - name: JWT_EXPIRES_IN
+              value: "1d"
+            - name: JWT_SECRET
+              value: "7fkd93Kejfskdjfh3947fKJDF983jdslf!@#$$%@3jkdfhsdfh9384"
 
 ---
 apiVersion: v1
@@ -118,12 +139,12 @@ spec:
       targetPort: 3002
   type: ClusterIP
 
-# ------------------ Order Service Deployment ------------------
+# ------------------ Order Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: order-service-deployment
+  name: order-service
 spec:
   replicas: 1
   selector:
@@ -137,13 +158,32 @@ spec:
       containers:
         - name: order-service
           image: order-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3003
           env:
             - name: PORT
               value: "3003"
             - name: MONGO_URI
-              value: mongodb://mongodb-service:27017/orderDB
+              value: "mongodb://mongodb-service:27017/orderDB"
+            - name: VITE_GOOGLE_MAPS_API_KEY
+              value: "AIzaSyAEKepFgGssHp94zRkRIEZUttqfXDTpRUE"
+            - name: PAYHERE_SECRET
+              value: "MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw=="
+            - name: CORS_ORIGINS
+              value: "http://localhost:5173,http://localhost:3000"
+            - name: NODE_ENV
+              value: "development"
+            - name: PAYHERE_MERCHANT_ID
+              value: "1230207"
+            - name: PAYHERE_MERCHANT_SECRET
+              value: "MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw=="
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service:3004"
+            - name: PAYMENT_SERVICE_URL
+              value: "http://payment-service:3005"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:3001/api/auth"
 
 ---
 apiVersion: v1
@@ -158,12 +198,12 @@ spec:
       targetPort: 3003
   type: ClusterIP
 
-# ------------------ Delivery Service Deployment ------------------
+# ------------------ Delivery Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: delivery-service-deployment
+  name: delivery-service
 spec:
   replicas: 1
   selector:
@@ -177,13 +217,24 @@ spec:
       containers:
         - name: delivery-service
           image: delivery-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 3009
           env:
             - name: PORT
               value: "3009"
             - name: MONGO_URI
-              value: mongodb://mongodb-service:27017/deliveryDB
+              value: "mongodb://mongodb-service:27017/deliveryDB"
+            - name: CORS_ORIGINS
+              value: "http://localhost:5173,http://localhost:3000"
+            - name: NODE_ENV
+              value: "development"
+            - name: ORDER_SERVICE_URL
+              value: "http://order-service:3003/api/orders"
+            - name: AUTH_SERVICE_URL
+              value: "http://auth-service:3001/api/auth"
+            - name: NOTIFICATION_SERVICE_URL
+              value: "http://notification-service:3004"
 
 ---
 apiVersion: v1
@@ -198,12 +249,12 @@ spec:
       targetPort: 3009
   type: ClusterIP
 
-# ------------------ Notification Service Deployment ------------------
+# ------------------ Notification Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: notification-service-deployment
+  name: notification-service
 spec:
   replicas: 1
   selector:
@@ -217,13 +268,12 @@ spec:
       containers:
         - name: notification-service
           image: notification-service:latest
+          imagePullPolicy: IfNotPresent
           ports:
-            - containerPort: 3010
+            - containerPort: 3004
           env:
             - name: PORT
-              value: "3010"
-            - name: MONGO_URI
-              value: mongodb://mongodb-service:27017/notificationDB
+              value: "3004"
 
 ---
 apiVersion: v1
@@ -234,16 +284,59 @@ spec:
   selector:
     app: notification-service
   ports:
-    - port: 3010
-      targetPort: 3010
+    - port: 3004
+      targetPort: 3004
   type: ClusterIP
 
-# ------------------ Frontend Deployment ------------------
+# ------------------ Payment Service Deployment & Service ------------------
 ---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: frontend-deployment
+  name: payment-service
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: payment-service
+  template:
+    metadata:
+      labels:
+        app: payment-service
+    spec:
+      containers:
+        - name: payment-service
+          image: payment-service:latest
+          imagePullPolicy: IfNotPresent
+          ports:
+            - containerPort: 3005
+          env:
+            - name: PORT
+              value: "3005"
+            - name: PAYHERE_MERCHANT_ID
+              value: "1230207"
+            - name: PAYHERE_MERCHANT_SECRET
+              value: "MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw=="
+
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: payment-service
+spec:
+  selector:
+    app: payment-service
+  ports:
+    - port: 3005
+      targetPort: 3005
+  type: ClusterIP
+
+# ------------------ Frontend Deployment & Service ------------------
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: frontend
 spec:
   replicas: 1
   selector:
@@ -257,6 +350,7 @@ spec:
       containers:
         - name: frontend
           image: frontend:latest
+          imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
 
@@ -268,8 +362,8 @@ metadata:
 spec:
   selector:
     app: frontend
+  type: NodePort
   ports:
     - port: 80
       targetPort: 80
       nodePort: 30080
-  type: NodePort

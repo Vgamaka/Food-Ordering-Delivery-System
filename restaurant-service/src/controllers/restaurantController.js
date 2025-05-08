@@ -2,7 +2,7 @@
 const User = require("../models/User");
 const authService = require("../services/authService");
 const orderService = require("../services/orderService");
-const bcrypt = require("bcrypt");            // for password hashing
+const bcrypt = require('bcryptjs');
 
 // ─── RESTAURANT-RELATED HANDLERS ──────────────────────────────────────────────
 

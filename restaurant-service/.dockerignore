@@ -1,18 +1,18 @@
-# Ignore node_modules
-node_modules
+# Dependency directory
+node_modules/
 
+# Local config & logs
 
-
-# Ignore logs
+npm-debug.log*
 *.log
 
-# Ignore Docker related intermediate files
-Dockerfile
-docker-compose.yml
-
-# Ignore dev/IDE files
+# Git and IDE files
 .git
 .gitignore
-.vscode
-.idea
-npm-debug.log
+.vscode/
+.idea/
+
+# Docker & k3s manifests (not needed in build context)
+Dockerfile
+docker-compose.yml
+k3s-deployment.yaml

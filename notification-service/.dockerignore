@@ -1,10 +1,18 @@
-node_modules
-.env
+# Dependency directories
+node_modules/
+
+# Local env and logs
+
+npm-debug.log*
 *.log
-Dockerfile
-docker-compose.yml
+
+# Git and IDE files
 .git
 .gitignore
-.vscode
-.idea
-npm-debug.log
+.vscode/
+.idea/
+
+# Docker/Kubernetes manifests (not needed in build context)
+Dockerfile
+docker-compose.yml
+k3s-deployment.yaml

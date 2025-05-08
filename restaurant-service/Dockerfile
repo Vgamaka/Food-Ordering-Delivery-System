@@ -1,20 +1,33 @@
-# Use official Node.js base image
-FROM node:20
+# ┌──────────── Stage 1: Install dependencies ─────────────
+FROM node:20-alpine AS deps
+WORKDIR /usr/src/app
 
-# Set working directory inside the container
-WORKDIR /app
+# Only copy manifest files, install prod deps
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
 
-# Copy package.json and package-lock.json if available
-COPY package*.json ./
+# ┌──────────── Stage 2: Build minimal runtime image ──────
+FROM node:20-alpine
+WORKDIR /usr/src/app
 
-# Install dependencies
-RUN npm install
+# Copy prod node_modules from deps stage
+COPY --from=deps /usr/src/app/node_modules ./node_modules
 
-# Copy the rest of the application code
+# Copy application source
 COPY . .
 
-# Expose the port (use 3002)
+# Force production mode
+ENV NODE_ENV=production
+
+# Expose the port this service listens on
 EXPOSE 3002
 
-# Start the application
+# Run as non-root user for better security
+USER node
+
+# Healthcheck so Kubernetes can verify readiness
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3002/ || exit 1
+
+# Start the service
 CMD ["node", "src/index.js"]

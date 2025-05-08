@@ -1,18 +1,19 @@
-# Node modules (huge, not needed inside build context)
-node_modules
+# Dependency and build artifacts
+node_modules/
+dist/
 
-# Environment files
-.env
+# Local config & logs
 
-# Build output (we rebuild inside container)
-dist
-
-# System files
+npm-debug.log*
 *.log
+
+# Docker & Kubernetes manifests
 Dockerfile
 docker-compose.yml
-.git
+k3s-deployment.yaml
+
+# VCS & editor metadata
+.git/
 .gitignore
-.vscode
-.idea
-npm-debug.log
+.vscode/
+.idea/

@@ -1,32 +1,34 @@
-# Step 1: Build Stage
-FROM node:20 AS builder
-
-WORKDIR /app
+# ┌──────────── Stage 1: Build the app ─────────────
+FROM node:20-alpine AS builder
+WORKDIR /usr/src/app
 
 # Install dependencies
-COPY package*.json ./
-RUN npm install
+COPY package.json package-lock.json* ./
+RUN npm ci
 
-# Copy source code
+# Copy source code and build
 COPY . .
-
-# Build the app
 RUN npm run build
 
-# Step 2: Production Stage
+# ┌──────────── Stage 2: Serve with Nginx ──────────
 FROM nginx:stable-alpine
+WORKDIR /usr/share/nginx/html
 
-# Remove default nginx website
-RUN rm -rf /usr/share/nginx/html/*
+# Remove default content
+RUN rm -rf ./*
 
-# Copy built frontend from builder
-COPY --from=builder /app/dist /usr/share/nginx/html
+# Copy built assets
+COPY --from=builder /usr/src/app/dist .
 
-# Copy custom nginx config (optional for SPA apps)
-# COPY nginx.conf /etc/nginx/nginx.conf
+# Copy custom nginx.conf
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
-# Expose port
+# Expose HTTP port
 EXPOSE 80
 
-# Start nginx server
+# Healthcheck
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost/ || exit 1
+
+# Run Nginx
 CMD ["nginx", "-g", "daemon off;"]

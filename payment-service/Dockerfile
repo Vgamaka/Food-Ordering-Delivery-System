@@ -1,11 +1,33 @@
-# Use official Node.js base image
-FROM node:20
+# ┌───────────── Stage 1: Install dependencies ─────────────
+FROM node:20-alpine AS deps
+WORKDIR /usr/src/app
 
-# Set working directory
-WORKDIR /app
+# Copy only manifest files and install prod deps
+COPY package.json package-lock.json* ./
+RUN npm ci --omit=dev
 
-# Copy package.json if available (optional)
-# (Skip if you have no code yet)
+# ┌───────────── Stage 2: Build minimal runtime image ──────
+FROM node:20-alpine
+WORKDIR /usr/src/app
 
-# Default command to keep container alive
-CMD ["node", "-e", "console.log('Notification Service placeholder running')"]
+# Copy prod node_modules from deps stage
+COPY --from=deps /usr/src/app/node_modules ./node_modules
+
+# Copy app source
+COPY . .
+
+# Force production mode
+ENV NODE_ENV=production
+
+# Expose the port this service listens on
+EXPOSE 3005
+
+# Drop root privileges for security
+USER node
+
+# Healthcheck for Kubernetes readiness
+HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3005/ || exit 1
+
+# Start the service
+CMD ["node", "src/index.js"]
