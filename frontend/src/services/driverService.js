@@ -47,5 +47,11 @@ export const assignOrderToDriver = (orderId, driverId) => {
 
 // ✅ Update Order Delivery Status (onTheWay → delivered)
 export const updateOrderStatus = (orderId, newStatus) => {
-  return driverAPI.put(`/orders/${orderId}/status`, { orderStatus: newStatus }).then(res => res.data);
+  // Get driver ID from localStorage to include in the request
+  const driverId = localStorage.getItem('driverId');
+  
+  return driverAPI.put(`/orders/${orderId}/status`, { 
+    orderStatus: newStatus,
+    assignedDriverId: driverId // Changed from "driverId" to "assignedDriverId" to match backend expectation
+  }).then(res => res.data);
 };
