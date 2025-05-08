@@ -1,9 +1,7 @@
 const bcrypt = require('bcrypt');
 const Driver = require('../models/Driver');
-const axios = require('axios');
 const path = require('path');
-
-const ORDER_SERVICE_URL = 'http://localhost:3003/api/orders';
+const driverOrderService = require('../services/driverOrderService');
 
 /* -------------------- DRIVER AUTHENTICATION -------------------- */
 
@@ -119,7 +117,7 @@ exports.updateDriverAvailability = async (req, res) => {
   }
 };
 
-/* -------------------- DRIVER ORDERS MANAGEMENT (PROXIED TO ORDER-SERVICE) -------------------- */
+/* -------------------- DRIVER ORDERS MANAGEMENT (USING SERVICE INTERFACE) -------------------- */
 
 // Fetch Driver Orders
 exports.getDriverOrders = async (req, res) => {
@@ -131,8 +129,8 @@ exports.getDriverOrders = async (req, res) => {
       return res.status(404).json({ message: 'Driver not found' });
     }
 
-    const response = await axios.get(`${ORDER_SERVICE_URL}/all`);
-    const allOrders = response.data;
+    // Use the service interface to fetch orders
+    const allOrders = await driverOrderService.fetchOrdersByDriver(driverId);
 
     let filteredOrders;
 
@@ -170,12 +168,14 @@ exports.assignDriverToOrder = async (req, res) => {
       return res.status(400).json({ message: 'You must set your availability to "Available" before accepting orders' });
     }
 
-    const response = await axios.patch(`${ORDER_SERVICE_URL}/${orderId}/update-status`, {
-      assignedDriverId,
-      orderStatus: "onTheWay",
-    });
+    // Use the service interface to assign driver to order
+    const updatedOrder = await driverOrderService.assignOrderToDriver(orderId, assignedDriverId);
 
-    res.status(200).json(response.data);
+    res.status(200).json({
+      success: true,
+      message: "Order assigned successfully",
+      order: updatedOrder
+    });
   } catch (err) {
     console.error('Error assigning driver:', err.message);
     res.status(500).json({ message: 'Failed to assign order to driver' });
@@ -185,11 +185,27 @@ exports.assignDriverToOrder = async (req, res) => {
 // Update Delivery Status
 exports.updateOrderStatus = async (req, res) => {
   const { orderId } = req.params;
-  const { orderStatus } = req.body;
+  const { orderStatus, assignedDriverId } = req.body;  // Changed from driverId to assignedDriverId
 
   try {
-    const response = await axios.patch(`${ORDER_SERVICE_URL}/${orderId}/update-status`, { orderStatus });
-    res.status(200).json(response.data);
+    // Validate driver ID
+    if (!assignedDriverId) {
+      return res.status(400).json({ message: 'Driver ID is required' });
+    }
+    
+    // Use the service interface to update the order status
+    const updatedOrder = await driverOrderService.updateOrderStatus(orderId, orderStatus, assignedDriverId);
+    
+    // If order is delivered, handle payment for COD orders
+    if (orderStatus === 'delivered') {
+      await driverOrderService.completeDelivery(orderId, assignedDriverId);
+    }
+    
+    res.status(200).json({
+      success: true,
+      message: `Order status updated to ${orderStatus}`,
+      order: updatedOrder
+    });
   } catch (err) {
     console.error('Error updating order status:', err.message);
     res.status(500).json({ message: 'Failed to update order status' });
