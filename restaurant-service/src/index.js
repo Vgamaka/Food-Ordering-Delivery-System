@@ -10,7 +10,6 @@ const connectDB = require('./config/db');
 const menuRoutes = require("./routes/menuRoutes");
 const restaurantRoutes = require("./routes/restaurantRoutes");
 const dashboardRoutes = require("./routes/dashboardRoutes");
-const restaurantOrderRoutes = require("./routes/restaurantOrderRoutes");
 
 dotenv.config();
 
@@ -29,11 +28,8 @@ connectDB();
 
 // Routes
 app.use("/api/menu", menuRoutes);
-app.use("/api/restaurant", dashboardRoutes); // ✅ Corrected
-app.use("/api/restaurant/profile", restaurantRoutes);
-app.use("/api/restaurant/orders", restaurantOrderRoutes);
-app.use('/api', require('./routes/restaurantRoutes'));
-app.use("/api/dashboard", dashboardRoutes); 
+app.use("/api/restaurants", restaurantRoutes);
+app.use("/api/dashboard", dashboardRoutes);
 
 // Health check
 app.get("/", (req, res) => {

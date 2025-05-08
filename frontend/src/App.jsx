@@ -23,8 +23,8 @@ import AdminDashboard from "./pages/admin/AdminDashboard";
 
 // Restaurant Pages
 import MenuList from "./pages/restaurant/menu/MenuList";
-import AddMenuItem from "./pages/restaurant/menu/AddMenuItem";
-import EditMenuItem from "./pages/restaurant/menu/EditMenuItem";
+import { AddMenuItem }  from "./pages/restaurant/menu/AddMenuItem";
+import { EditMenuItem } from "./pages/restaurant/menu/EditMenuItem";
 import RestaurantDashboard from "./pages/restaurant/RestaurantDashboard";
 import Profile from "./pages/restaurant/Profile";
 import Dashboard from "./pages/restaurant/Dashboard";
