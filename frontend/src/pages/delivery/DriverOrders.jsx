@@ -231,7 +231,7 @@ const DriverOrders = () => {
       console.log('Available orders:', filteredOrders);
     } else if (activeTab === 'ongoing') {
       filteredOrders = orders.filter(order => 
-        ['accepted', 'onTheWay'].includes(order.orderStatus)
+        order.orderStatus === 'onTheWay' // Only show "onTheWay" orders in ongoing tab
       );
       console.log('Ongoing orders:', filteredOrders);
     } else {

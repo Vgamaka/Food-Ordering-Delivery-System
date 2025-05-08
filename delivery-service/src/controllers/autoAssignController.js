@@ -3,7 +3,7 @@ const axios = require('axios');
 
 // Configuration for the auto-assignment service
 const AUTO_ASSIGN_CONFIG = {
-  MAX_DISTANCE_KM: 5,  // Maximum distance in kilometers to consider a driver
+  MAX_DISTANCE_KM: 5000,  // Maximum distance in kilometers to consider a driver
   DRIVER_RESPONSE_TIMEOUT: 60000, // Time in ms (1 minute) for driver to respond
   ORDER_SERVICE_URL: 'http://localhost:3003/api/orders',
   NOTIFICATION_SERVICE_URL: 'http://localhost:3005/api/notifications'
