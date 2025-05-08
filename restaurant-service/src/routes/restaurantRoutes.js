@@ -1,18 +1,33 @@
 const express = require("express");
-const router = express.Router();
-const restaurantController = require("../controllers/restaurantController");
+const router  = express.Router();
+const ctrl    = require("../controllers/restaurantController");
 
-// Get all approved restaurants
-router.get("/restaurants", restaurantController.getAllApprovedRestaurants);
+// ── Restaurant endpoints ──────────────────────────────────────────
 
-// Get single restaurant by ID
-router.get("/restaurant/:id", restaurantController.getRestaurantById);
+// Register
+router.post("/", ctrl.registerRestaurant);
 
-// Approve/Reject 
-router.patch("/restaurant/:id/approve", restaurantController.approveRestaurant);
-router.patch("/restaurant/:id/reject", restaurantController.rejectRestaurant);
+// List & single fetch
+router.get("/",    ctrl.getAllApprovedRestaurants);
+router.get("/:id", ctrl.getRestaurantById);
+
+// Approve / Reject
+router.patch("/:id/approve", ctrl.approveRestaurant);
+router.patch("/:id/reject",  ctrl.rejectRestaurant);
 
 // Profile update
-router.put("/restaurant/:id", restaurantController.updateRestaurantProfile);
+router.put("/:id/profile", ctrl.updateRestaurantProfile);
+
+// Delete account
+router.delete("/:id", ctrl.deleteRestaurant);
+
+// ── Order endpoints ───────────────────────────────────────────────
+
+// Get all orders for this restaurant (pass ?restaurantId=…)
+router.get("/orders", ctrl.getRestaurantOrders);
+
+// Accept / reject a specific order
+router.patch("/orders/:orderId/accept", ctrl.acceptOrder);
+router.patch("/orders/:orderId/reject",  ctrl.rejectOrder);
 
 module.exports = router;

@@ -23,28 +23,29 @@ export const fetchChartData = (restaurantId, filter = "monthly") => {
 // fetch restaurant profile from restaurant-service
 export const fetchProfile = (restaurantId) =>
   restaurantAPI
-    .get(`/restaurant/profile/restaurant/${restaurantId}`)
+    .get(`/restaurants/${restaurantId}`)
     .then(res => res.data);
 
 // updateProfile → restaurant-service
 export const updateProfile = (restaurantId, profileData) =>
- restaurantAPI
-    .put(`/restaurant/profile/restaurant/${restaurantId}`, profileData)
+  restaurantAPI
+    .put(`/restaurants/${restaurantId}/profile`, profileData)
     .then(res => res.data);
+
 
 // deleteAccount → restaurant-service
 export const deleteAccount = (restaurantId) =>
   restaurantAPI
-    .delete(`/restaurant/profile/restaurant/${restaurantId}`)
+    .delete(`/restaurants/${restaurantId}`)
     .then(res => res.data);
 
 // =====================================
 // 📦 Menu Services
 // =====================================
 
-export const fetchMenuItems = (restaurantId) => {
-  return restaurantAPI.get(`/menu/${restaurantId}`).then(res => res.data);
-};
+export const fetchMenuItems = (restaurantId) =>
+  restaurantAPI.get(`/menu/restaurant/${restaurantId}`).then(res => res.data);
+
 
 export const createMenuItem = (formData) => {
   return restaurantAPI.post(`/menu`, formData, {
@@ -80,9 +81,8 @@ export const updateOrderStatus = (orderId, payload) =>
     // <<— drop the `orders` prefix: PATCH /api/orders/:orderId/update-status
     .patch(`/${orderId}/update-status`, payload)
     .then(res => res.data);
-    
-    export const fetchSingleMenuItem = async (menuItemId) => {
-          // ← drop the extra “item” segment so it matches GET /api/menu/:id
-          const res = await restaurantAPI.get(`/menu/${menuItemId}`);
-          return res.data;
-      };
+
+export const fetchSingleMenuItem = async (menuItemId) => {
+  const res = await restaurantAPI.get(`/menu/${menuItemId}`);
+  return res.data;
+};
