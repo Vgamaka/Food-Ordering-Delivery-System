@@ -23,8 +23,9 @@ services:
     environment:
       - PORT=3002
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/restaurantDB?retryWrites=true&w=majority
-      - ORDER_SERVICE_URL=http://localhost:3003/api/orders
-      - AUTH_SERVICE_URL=http://localhost:3001/api/auth
+      # <-- use service names here, not localhost
+      - ORDER_SERVICE_URL=http://order-service:3003/api/orders
+      - AUTH_SERVICE_URL=http://auth-service:3001/api/auth
       - JWT_EXPIRES_IN=1d
       - JWT_SECRET=7fkd93Kejfskdjfh3947fKJDF983jdslf!@#$$%@3jkdfhsdfh9384
 
@@ -37,14 +38,13 @@ services:
       - PORT=3003
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/orderDB?retryWrites=true&w=majority
       - VITE_GOOGLE_MAPS_API_KEY=AIzaSyAEKepFgGssHp94zRkRIEZUttqfXDTpRUE
-      - PAYHERE_SECRET="MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw=="
+      - PAYHERE_SECRET=MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw==
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
       - NODE_ENV=development
-      - PAYHERE_MERCHANT_ID=1230207
-      - PAYHERE_MERCHANT_SECRET=MTYzMjA5Mzc2NjM0NjA2OTA4NjAxMzIwODEwMzU5NDE3OTA0NzgyMw==
-      - NOTIFICATION_SERVICE_URL=http://localhost:3004
-      - PAYMENT_SERVICE_URL=http://localhost:3005
-      - AUTH_SERVICE_URL=http://localhost:3001/api/auth
+      # <-- service-name URLs here too
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3004
+      - PAYMENT_SERVICE_URL=http://payment-service:3005
+      - AUTH_SERVICE_URL=http://auth-service:3001/api/auth
 
   delivery-service:
     build: ./delivery-service
@@ -56,9 +56,10 @@ services:
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/deliveryDB?retryWrites=true&w=majority
       - CORS_ORIGINS=http://localhost:5173,http://localhost:3000
       - NODE_ENV=development
-      - ORDER_SERVICE_URL=http://localhost:3003/api/orders
-      - AUTH_SERVICE_URL=http://localhost:3001/api/auth
-      - NOTIFICATION_SERVICE_URL=http://localhost:3004
+      # <-- and here
+      - ORDER_SERVICE_URL=http://order-service:3003/api/orders
+      - AUTH_SERVICE_URL=http://auth-service:3001/api/auth
+      - NOTIFICATION_SERVICE_URL=http://notification-service:3004
 
   notification-service:
     build: ./notification-service
@@ -83,8 +84,6 @@ services:
     container_name: frontend
     ports:
       - "3000:80"
-    volumes:
-      - ./frontend/nginx.conf:/etc/nginx/conf.d/default.conf:ro
     depends_on:
       - auth-service
       - restaurant-service
