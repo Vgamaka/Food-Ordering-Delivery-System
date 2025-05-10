@@ -386,84 +386,83 @@ const AllItems = () => {
 
       {/* Menu Section */}
       <section id="menu" className="py-16 bg-gray-50">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-12">
-            <span className="text-red-600 text-lg font-medium" style={{ fontFamily: "'Amatic SC', cursive" }}>
-              Our Menu
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold mt-2">
-              Check Our Delicious Menu
-            </h2>
-          </div>
+  <div className="container mx-auto px-4">
+    <div className="text-center mb-12">
+      <span className="text-red-600 text-lg font-medium" style={{ fontFamily: "'Amatic SC', cursive" }}>
+        Our Menu
+      </span>
+      <h2 className="text-3xl md:text-4xl font-bold mt-2">
+        Check Our Delicious Menu
+      </h2>
+    </div>
 
-          {/* Category Filters */}
-          <div className="flex justify-center mb-8">
-            <div className="flex flex-wrap justify-center gap-2">
-              {getCategories().map((category, index) => (
+    {/* Category Filters */}
+    <div className="flex justify-center mb-8">
+      <div className="flex flex-wrap justify-center gap-2">
+        {getCategories().map((category, index) => (
+          <button
+            key={index}
+            className={`${activeCategory === category
+              ? "bg-red-600 text-white"
+              : "bg-white text-gray-700 hover:bg-red-600 hover:text-white"
+            } px-4 py-2 rounded-full transition-colors duration-300`}
+            onClick={() => setActiveCategory(category)}
+          >
+            {category}
+          </button>
+        ))}
+      </div>
+    </div>
+
+    {/* Menu Items Grid */}
+    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+      {getFilteredItems()
+        .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+        .map((item, index) => (
+          <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
+            <div className="p-5">
+              <div className="relative h-48 overflow-hidden rounded-lg mb-4 group">
+                <img
+                  src={`http://localhost:3002/uploads/${item.image}`}
+                  alt={item.name}
+                  className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
+                />
+
+                {/* Black gradient background */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
+
+                {/* Red category badge - updated z-index */}
+                <div className="absolute top-4 left-4 bg-red-600 text-white px-2 py-1 rounded z-0">
+                  {item.category}
+                </div>
+
+                {/* Price and name - updated z-index */}
+                <div className="absolute top-3 right-3 bg-white shadow-md text-red-600 font-bold px-3 py-1 rounded-full text-sm z-0">
+                  Rs. {item.price}
+                </div>
+                <h3 className="absolute bottom-3 left-3 text-white font-bold text-lg z-0">
+                  {item.name}
+                </h3>
+              </div>
+              <p className="text-gray-600 text-sm mb-5 line-clamp-2">
+                {item.description}
+              </p>
+
+              <div className="flex">
                 <button
-                  key={index}
-                  className={`${activeCategory === category
-                    ? "bg-red-600 text-white"
-                    : "bg-white text-gray-700 hover:bg-red-600 hover:text-white"
-                    } px-4 py-2 rounded-full transition-colors duration-300`}
-                  onClick={() => setActiveCategory(category)}
+                  onClick={() => handleAddToCart(item)}
+                  className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 font-medium flex items-center justify-center space-x-2 shadow-sm"
                 >
-                  {category}
+                  <span>Add to Cart</span>
+                  <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
+                    <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
+                  </svg>
                 </button>
-              ))}
+              </div>
             </div>
           </div>
-
-          {/* Menu Items Grid */}
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {getFilteredItems()
-              .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
-              .map((item, index) => (
-                <div key={index} className="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow duration-300">
-
-                  <div className="p-5">
-                    <div className="relative h-48 overflow-hidden rounded-lg mb-4 group">
-                    <img
-                      src={`http://localhost:3002/uploads/${item.image}`}
-                      alt={item.name}
-                        className="w-full h-full object-cover transform transition-transform duration-500 group-hover:scale-110"
-                      />
-
-                      {/* Black gradient background */}
-                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent"></div>
-
-                      {/* Red category badge - move after gradient */}
-                      <div className="absolute top-4 left-4 bg-red-600 text-white px-2 py-1 rounded z-10">
-                        {item.category}
-                      </div>
-
-                      {/* Price and name */}
-                      <div className="absolute top-3 right-3 bg-white shadow-md text-red-600 font-bold px-3 py-1 rounded-full text-sm z-10">
-                        Rs. {item.price}
-                      </div>
-                      <h3 className="absolute bottom-3 left-3 text-white font-bold text-lg z-10">
-                        {item.name}
-                      </h3>
-                    </div>
-                    <p className="text-gray-600 text-sm mb-5 line-clamp-2">
-                      {item.description}
-                    </p>
-
-                    <div className="flex">
-                      <button
-                        onClick={() => handleAddToCart(item)}
-                        className="w-full bg-red-600 hover:bg-red-700 text-white px-4 py-3 rounded-lg transition-colors duration-300 font-medium flex items-center justify-center space-x-2 shadow-sm"
-                      >
-                        <span>Add to Cart</span>
-                        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                          <path d="M3 1a1 1 0 000 2h1.22l.305 1.222a.997.997 0 00.01.042l1.358 5.43-.893.892C3.74 11.846 4.632 14 6.414 14H15a1 1 0 000-2H6.414l1-1H14a1 1 0 00.894-.553l3-6A1 1 0 0017 3H6.28l-.31-1.243A1 1 0 005 1H3z" />
-                        </svg>
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              ))}
-          </div>
+        ))}
+    </div>
           {/* Beautiful Pagination Controls for Menu Items */}
           <div className="flex justify-center mt-8 space-x-2 items-center">
             <button
