@@ -25,7 +25,7 @@ const AllItems = () => {
   // Pagination for Menu Items
   const [currentPage, setCurrentPage] = useState(1);
   const itemsPerPage = 6;
-
+  const authBaseUrl = import.meta.env.VITE_AUTH_SERVICE_URL.replace(/\/api\/auth\/?$/, "");
   // Pagination for Restaurants
   const [restaurantPage, setRestaurantPage] = useState(1);
   const restaurantsPerPage = 3;
@@ -534,8 +534,7 @@ const AllItems = () => {
               .map((restaurant) => (
                 <div key={restaurant._id} className="bg-white border rounded-xl shadow p-4 hover:shadow-lg transition-shadow duration-300">
                   <img
-                    src={`${import.meta.env.VITE_AUTH_SERVICE_URL.replace("/api/auth", "")}/uploads/${restaurant.restaurantDetails?.proofImage || "default.jpg"}`}
-
+                    src={`${authBaseUrl}/uploads/${restaurant.restaurantDetails?.proofImage || "default.jpg"}`}
                     alt={restaurant.restaurantDetails?.name || "Restaurant"}
                     className="w-full h-64 object-cover rounded-lg mb-4"
                   />

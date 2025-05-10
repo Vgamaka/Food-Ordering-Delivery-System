@@ -6,6 +6,8 @@ services:
     container_name: auth-service
     ports:
       - "3001:3001"
+    volumes:
+      - ./auth-service/uploads:/usr/src/app/uploads
     environment:
       - PORT=3001
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/authDB?retryWrites=true&w=majority
@@ -20,14 +22,18 @@ services:
     container_name: restaurant-service
     ports:
       - "3002:3002"
+    volumes:
+      - ./restaurant-service/uploads:/usr/src/app/uploads
     environment:
       - PORT=3002
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/restaurantDB?retryWrites=true&w=majority
-      # <-- use service names here, not localhost
       - ORDER_SERVICE_URL=http://order-service:3003/api/orders
       - AUTH_SERVICE_URL=http://auth-service:3001/api/auth
       - JWT_EXPIRES_IN=1d
       - JWT_SECRET=7fkd93Kejfskdjfh3947fKJDF983jdslf!@#$$%@3jkdfhsdfh9384
+    depends_on:
+      - auth-service
+      - order-service
 
   order-service:
     build: ./order-service
@@ -51,6 +57,8 @@ services:
     container_name: delivery-service
     ports:
       - "3009:3009"
+    volumes:
+      - ./delivery-service/uploads:/usr/src/app/uploads
     environment:
       - PORT=3009
       - MONGO_URI=mongodb+srv://Admin:Admin123@cluster0.of8dm.mongodb.net/deliveryDB?retryWrites=true&w=majority
@@ -60,6 +68,10 @@ services:
       - ORDER_SERVICE_URL=http://order-service:3003/api/orders
       - AUTH_SERVICE_URL=http://auth-service:3001/api/auth
       - NOTIFICATION_SERVICE_URL=http://notification-service:3004
+    depends_on:
+      - order-service
+      - auth-service
+      - notification-service
 
   notification-service:
     build: ./notification-service

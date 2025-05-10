@@ -19,6 +19,10 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 # copy app source
 COPY . .
 
+# ensure uploads directory exists and is writable by node user
+RUN mkdir -p /usr/src/app/uploads \
+    && chown -R node:node /usr/src/app/uploads
+
 # set production env (disables dev-only code paths)
 ENV NODE_ENV=production
 
@@ -28,7 +32,7 @@ EXPOSE 3001
 # run as a non-root user for better security
 USER node
 
-# simple healthcheck (requires curl in the image; Alpine has it by default)
+# simple healthcheck (requires wget in the image)
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3001/ || exit 1
 

@@ -20,7 +20,7 @@ export const fetchRestaurantById = async (restaurantId) => {
 
 // Fetch menu items of a specific restaurant
 export const fetchMenuItemsByRestaurant = async (restaurantId) => {
-  const res = await restaurantAPI.get(`/menu/${restaurantId}`);
+   const res = await restaurantAPI.get(`/menu/restaurant/${restaurantId}`);
   return res.data;
 };
 

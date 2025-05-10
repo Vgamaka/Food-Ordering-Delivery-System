@@ -1,3 +1,4 @@
+
 # ┌────────── Stage 1: Install dependencies ──────────
 FROM node:20-alpine AS deps
 WORKDIR /usr/src/app
@@ -13,21 +14,25 @@ WORKDIR /usr/src/app
 # Copy installed prod modules from deps stage
 COPY --from=deps /usr/src/app/node_modules ./node_modules
 
-# Copy app source
+# Copy application source
 COPY . .
 
-# Force production mode (disable any dev branches in code)
+# Ensure uploads directory exists and is writable by non-root user
+RUN mkdir -p /usr/src/app/uploads \
+    && chown -R node:node /usr/src/app/uploads
+
+# Force production mode
 ENV NODE_ENV=production
 
 # Expose the port this service listens on
-EXPOSE 3002
+EXPOSE 3009
 
 # Drop to non-root user for security
 USER node
 
 # Optional healthcheck so Kubernetes knows when the container is healthy
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
-  CMD wget --no-verbose --tries=1 --spider http://localhost:3002/ || exit 1
+  CMD wget --no-verbose --tries=1 --spider http://localhost:3009/ || exit 1
 
 # Launch the service
 CMD ["node", "src/index.js"]

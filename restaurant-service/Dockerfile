@@ -6,7 +6,7 @@ WORKDIR /usr/src/app
 COPY package.json package-lock.json* ./
 RUN npm ci --omit=dev
 
-# ┌──────────── Stage 2: Build minimal runtime image ──────
+# ┌──────────── Stage 2: Build minimal runtime image ─────────────────────────
 FROM node:20-alpine
 WORKDIR /usr/src/app
 
@@ -16,18 +16,22 @@ COPY --from=deps /usr/src/app/node_modules ./node_modules
 # Copy application source
 COPY . .
 
+# Ensure uploads directory exists and is writable by non-root user
+RUN mkdir -p /usr/src/app/uploads \
+    && chown -R node:node /usr/src/app/uploads
+
 # Force production mode
 ENV NODE_ENV=production
 
 # Expose the port this service listens on
 EXPOSE 3002
 
-# Run as non-root user for better security
-USER node
-
 # Healthcheck so Kubernetes can verify readiness
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \
   CMD wget --no-verbose --tries=1 --spider http://localhost:3002/ || exit 1
+
+# Run as non-root user for better security
+USER node
 
 # Start the service
 CMD ["node", "src/index.js"]

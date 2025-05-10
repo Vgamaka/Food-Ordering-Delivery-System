@@ -16,7 +16,7 @@ const Cart = () => {
     clearCart,
     getTotal,
   } = useCart();
-
+  const restaurantBase = import.meta.env.VITE_RESTAURANT_SERVICE_URL.replace(/\/api\/?$/, "");
   const { auth } = useAuth();
   const navigate = useNavigate();
 
@@ -59,8 +59,7 @@ const Cart = () => {
                     className="flex items-center gap-6 border-b pb-6 mb-6"
                   >
                     <img
-                      src={`${import.meta.env.VITE_RESTAURANT_SERVICE_URL.replace("/api/restaurant", "")}/uploads/${item.image}`}
-                      alt={item.name}
+                      src={`${restaurantBase}/uploads/${item.image}`} alt={item.name}
                       className="w-24 h-24 object-cover rounded-lg"
                     />
                     <div className="flex-1">
