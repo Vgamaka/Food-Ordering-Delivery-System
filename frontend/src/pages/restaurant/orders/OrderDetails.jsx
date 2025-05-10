@@ -1,197 +1,136 @@
-import { useEffect, useState } from "react";
-import { fetchOrders as fetchOrdersAPI } from "../../../services/restaurantService";
+import { useState, useEffect } from "react";
+import { toast } from "react-toastify";
 import { motion } from "framer-motion";
-import OrderDetails from "./OrderDetails";
+import { Button, Card } from "flowbite-react";
+import { fetchOrderDetails, updateOrderStatus } from "../../../services/restaurantService";
 
-export default function OrderList() {
-  const [orders, setOrders] = useState([]);
-  const [filterStatus, setFilterStatus] = useState("all");
-  const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const ordersPerPage = 5;
+export default function OrderDetails({ orderId, onClose }) {
+  const [order, setOrder] = useState(null);
+  const [prepTime, setPrepTime] = useState("");
+  const [rejectionReason, setRejectionReason] = useState("");
 
-  // Modal state
-  const [showDetails, setShowDetails] = useState(false);
-  const [selectedOrderId, setSelectedOrderId] = useState(null);
-
-  const restaurantId = JSON.parse(localStorage.getItem("user"))?.id;
-
-  // Fetch orders
   useEffect(() => {
-    if (!restaurantId) return;
-    const fetch = async () => {
-      setLoading(true);
+    if (!orderId) return;
+    const load = async () => {
       try {
-        const data = await fetchOrdersAPI(restaurantId);
-        setOrders(data);
+        const data = await fetchOrderDetails(orderId);
+        setOrder(data);
       } catch (err) {
-        console.error("Error fetching orders:", err);
-      } finally {
-        setLoading(false);
+        console.error("Error loading order", err);
+        toast.error("Failed to load order");
       }
     };
-    fetch();
-  }, [restaurantId]);
+    load();
+  }, [orderId]);
 
-  // Filter logic
-  const filteredOrders = Array.isArray(orders)
-    ? orders.filter(order => {
-        if (filterStatus === "all") return true;
-        if (filterStatus === "pendingConfirmed") {
-          return ["pending", "confirmed"].includes(order.orderStatus);
-        }
-        return order.orderStatus === filterStatus;
-      })
-    : [];
+  const handleUpdate = async (status) => {
+    try {
+      const payload = { orderStatus: status };
+      if (status === "accepted" && prepTime) {
+        payload.prepTime = prepTime;
+      }
+      if (status === "rejected" && rejectionReason) {
+        payload.rejectionReason = rejectionReason;
+      }
 
-  // Pagination
-  const indexOfLastOrder = currentPage * ordersPerPage;
-  const indexOfFirstOrder = indexOfLastOrder - ordersPerPage;
-  const currentOrders = filteredOrders.slice(indexOfFirstOrder, indexOfLastOrder);
-
-  const nextPage = () => {
-    if (currentPage < Math.ceil(filteredOrders.length / ordersPerPage)) {
-      setCurrentPage(prev => prev + 1);
+      await updateOrderStatus(orderId, payload);
+      toast.success(`Order ${status} successfully`);
+      setTimeout(onClose, 500);
+    } catch (err) {
+      console.error("Failed to update order status", err);
+      toast.error("Failed to update order");
     }
   };
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(prev => prev - 1);
-    }
-  };
-
-  // Reset page on filter change
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [filterStatus]);
+  if (!order) {
+    return (
+      <div className="text-center py-20 text-gray-600 text-lg">
+        Loading order details...
+      </div>
+    );
+  }
 
   return (
-    <>
-      <motion.div
-        className="max-w-7xl mx-auto px-4 md:px-8 py-6"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6 }}
-      >
+    <motion.div
+      className="max-w-3xl mx-auto px-4 md:px-8 py-10"
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.6 }}
+    >
+      <Card className="p-8">
         <h2 className="text-3xl font-bold text-yellow-600 text-center mb-8">
-          Restaurant Order Management
+          Order Details
         </h2>
 
-        <div className="flex flex-wrap justify-center gap-2 mb-8">
-          {[
-            { key: "all", label: "All Orders" },
-            { key: "pendingConfirmed", label: "Pending & Confirmed" },
-            { key: "accepted", label: "Accepted" },
-            { key: "ready", label: "Ready" },
-            { key: "rejected", label: "Rejected" },
-          ].map(({ key, label }) => (
-            <button
-              key={key}
-              onClick={() => setFilterStatus(key)}
-              className={`px-4 py-2 rounded-xl font-semibold transition ${
-                filterStatus === key
-                  ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:shadow-2xl"
-                  : key === "rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-gray-100 text-gray-700"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
+        <div className="space-y-2 text-gray-700 mb-6">
+          <p><span className="font-semibold">Order ID:</span> {order._id}</p>
+          <p><span className="font-semibold">Status:</span> {order.orderStatus}</p>
+          <p><span className="font-semibold">Total Amount:</span> Rs. {order.totalAmount}</p>
         </div>
 
-        {loading ? (
-          <div className="text-center py-20 text-gray-600 text-lg">
-            Loading orders...
-          </div>
-        ) : filteredOrders.length === 0 ? (
-          <div className="text-center py-20 text-gray-500 text-md">
-            No orders found for this selection.
-          </div>
-        ) : (
-          <>
-            <div className="space-y-6">
-              {currentOrders.map(order => (
-                <motion.div
-                  key={order._id}
-                  className="bg-white rounded-xl shadow p-6"
-                  whileHover={{ scale: 1.02 }}
-                  transition={{ type: "spring", stiffness: 300 }}
-                >
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                    <div className="space-y-1 text-gray-700">
-                      <p>
-                        <span className="font-semibold">Order ID:</span> {order._id}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Status:</span> {order.orderStatus}
-                      </p>
-                      <p>
-                        <span className="font-semibold">Payment:</span> {order.paymentMethod.toUpperCase()} ({order.paymentStatus})
-                      </p>
-                      <p>
-                        <span className="font-semibold">Total:</span> Rs. {order.totalAmount}
-                      </p>
-                      <p className="text-xs text-gray-400">
-                        {new Date(order.createdAt).toLocaleString()}
-                      </p>
-                    </div>
-                    <div>
-                      <button
-                        onClick={() => {
-                          setSelectedOrderId(order._id);
-                          setShowDetails(true);
-                        }}
-                        className="bg-gradient-to-r from-yellow-400 to-orange-400 text-black font-semibold px-4 py-2 rounded-xl shadow-md hover:shadow-xl transition"
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              ))}
+        <div className="mb-8">
+          <h3 className="text-lg font-semibold mb-2 text-gray-800">Items:</h3>
+          <ul className="list-disc pl-6 space-y-1 text-gray-700">
+            {order.items.map((item, i) => (
+              <li key={i}>
+                {item.name} – {item.quantity} × Rs.{item.price}
+              </li>
+            ))}
+          </ul>
+        </div>
+
+        {(order.orderStatus === "pending" || order.orderStatus === "confirmed") && (
+          <div className="space-y-6">
+            <div className="space-y-3">
+              <input
+                type="number"
+                placeholder="Preparation Time (minutes)"
+                value={prepTime}
+                onChange={(e) => setPrepTime(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2"
+              />
+              <Button
+                onClick={() => handleUpdate("accepted")}
+                disabled={!prepTime}
+                className={`w-full rounded-xl font-semibold shadow-md hover:shadow-lg transition-all duration-300 ${
+                  prepTime
+                    ? "bg-gradient-to-r from-yellow-400 to-orange-400 text-black"
+                    : "bg-gray-300 text-gray-600 cursor-not-allowed"
+                }`}
+              >
+                Accept Order
+              </Button>
             </div>
 
-            <div className="flex justify-center gap-4 mt-8">
-              <button
-                onClick={prevPage}
-                disabled={currentPage === 1}
-                className={`px-4 py-2 rounded-xl font-semibold transition ${
-                  currentPage === 1
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:shadow-2xl"
-                }`}
+            <div className="space-y-3">
+              <textarea
+                placeholder="Optional rejection reason"
+                value={rejectionReason}
+                onChange={(e) => setRejectionReason(e.target.value)}
+                className="w-full border border-gray-300 rounded-lg p-2"
+                rows={3}
+              />
+              <Button
+                onClick={() => handleUpdate("rejected")}
+                className="w-full rounded-xl bg-gradient-to-r from-red-400 to-red-600 text-black font-semibold shadow-md hover:shadow-lg transition-all duration-300"
               >
-                Previous
-              </button>
-              <button
-                onClick={nextPage}
-                disabled={currentPage === Math.ceil(filteredOrders.length / ordersPerPage)}
-                className={`px-4 py-2 rounded-xl font-semibold transition ${
-                  currentPage === Math.ceil(filteredOrders.length / ordersPerPage)
-                    ? "bg-gray-300 text-gray-500 cursor-not-allowed"
-                    : "bg-gradient-to-r from-yellow-400 to-orange-400 text-black shadow-lg hover:shadow-2xl"
-                }`}
-              >
-                Next
-              </button>
+                Reject Order
+              </Button>
             </div>
-          </>
+          </div>
         )}
-      </motion.div>
 
-      {showDetails && (
-        // Overlay
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setShowDetails(false)} />
-      )}
-
-      {showDetails && (
-        <div className="fixed inset-0 flex items-center justify-center p-4 z-50">
-          <OrderDetails orderId={selectedOrderId} onClose={() => setShowDetails(false)} />
-        </div>
-      )}
-    </>
+        {order.orderStatus === "accepted" && (
+          <div className="mt-8">
+            <Button
+              onClick={() => handleUpdate("ready")}
+              className="w-full rounded-xl bg-gradient-to-r from-purple-400 to-blue-500 text-white font-semibold shadow-md hover:shadow-lg transition-all duration-300"
+            >
+              Mark as Ready
+            </Button>
+          </div>
+        )}
+      </Card>
+    </motion.div>
   );
 }
