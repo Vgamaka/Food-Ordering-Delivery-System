@@ -3,6 +3,7 @@ import { fetchMenuItems, deleteMenuItem } from "../../../services/restaurantServ
 import { motion } from "framer-motion";
 import { AddMenuItem } from "./AddMenuItem";      
 import { EditMenuItem } from "./EditMenuItem";    
+import Swal from "sweetalert2";
 
 export default function MenuList() {
   const [items, setItems] = useState([]);
@@ -27,15 +28,26 @@ export default function MenuList() {
     }
   };
 
-  const deleteItem = async (id) => {
-    if (!window.confirm("Delete this item?")) return;
-    try {
-      await deleteMenuItem(id);
-      fetchItems();
-    } catch (err) {
-      alert("Delete failed.");
-    }
-  };
+    const deleteItem = async (id) => {
+       const { isConfirmed } = await Swal.fire({
+          title: "Are you sure?",
+          text: "This action cannot be undone.",
+          icon: "warning",
+        showCancelButton: true,
+          confirmButtonText: "Yes, delete it!",
+          cancelButtonText: "Cancel",
+        reverseButtons: true,
+        });
+        if (!isConfirmed) return;
+    
+        try {
+          await deleteMenuItem(id);
+          await Swal.fire("Deleted!", "Your menu item has been removed.", "success");
+          fetchItems();
+        } catch (err) {
+          await Swal.fire("Error", "Failed to delete the item.", "error");
+        }
+      };
 
   useEffect(() => {
     fetchItems();
