@@ -1,10 +1,8 @@
-// frontend/src/pages/restaurant/menu/MenuList.jsx
-
 import React, { useEffect, useState } from "react";
 import { fetchMenuItems, deleteMenuItem } from "../../../services/restaurantService";
 import { motion } from "framer-motion";
-import { AddMenuItem } from "./AddMenuItem";      // ← named import
-import { EditMenuItem } from "./EditMenuItem";    // ← named import
+import { AddMenuItem } from "./AddMenuItem";      
+import { EditMenuItem } from "./EditMenuItem";    
 
 export default function MenuList() {
   const [items, setItems] = useState([]);

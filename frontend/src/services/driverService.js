@@ -35,17 +35,17 @@ export const updateDriverProfile = (driverId, profileData) => {
 // ORDERS RELATED
 // =======================
 
-// ✅ Fetch Driver Orders
+// Fetch Driver Orders
 export const fetchOrdersByDriver = (driverId) => {
   return driverAPI.get(`/orders/driver/${driverId}`).then(res => res.data);
 };
 
-// ✅ Assign Driver to Order
+//  Assign Driver to Order
 export const assignOrderToDriver = (orderId, driverId) => {
   return driverAPI.post(`/orders/assign/${orderId}`, { assignedDriverId: driverId }).then(res => res.data);
 };
 
-// ✅ Update Order Delivery Status (onTheWay → delivered)
+// Update Order Delivery Status (onTheWay → delivered)
 export const updateOrderStatus = (orderId, newStatus) => {
   // Get driver ID from localStorage to include in the request
   const driverId = localStorage.getItem('driverId');

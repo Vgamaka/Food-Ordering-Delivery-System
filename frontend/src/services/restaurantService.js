@@ -1,8 +1,7 @@
-// frontend/src/services/restaurantService.js
 import { restaurantAPI, orderAPI, authAPI } from "./api";
 
 // =====================================
-// 📦 Dashboard Services
+//  Dashboard Services
 // =====================================
 
 export const fetchDashboardStats = (restaurantId) => {
@@ -17,7 +16,7 @@ export const fetchChartData = (restaurantId, filter = "monthly") => {
 
 
 // =====================================
-// 📦 Profile Services
+//  Profile Services
 // =====================================
 
 // fetch restaurant profile from restaurant-service
@@ -40,7 +39,7 @@ export const deleteAccount = (restaurantId) =>
     .then(res => res.data);
 
 // =====================================
-// 📦 Menu Services
+//  Menu Services
 // =====================================
 
 export const fetchMenuItems = (restaurantId) =>
@@ -64,7 +63,7 @@ export const deleteMenuItem = (menuItemId) => {
 };
 
 // =====================================
-// 📦 Order Services
+// Order Services
 // =====================================
 
 export const fetchOrders = (restaurantId) =>

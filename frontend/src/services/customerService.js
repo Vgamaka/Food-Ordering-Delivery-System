@@ -1,7 +1,7 @@
 import { authAPI, restaurantAPI, orderAPI } from "./api";
 
 // ============================================
-// 📦 MENU & RESTAURANT SECTION
+// ENU & RESTAURANT SECTION
 // ============================================
 
 // Fetch all approved restaurants
@@ -31,7 +31,7 @@ export const fetchAllMenuItems = async () => {
 };
 
 // ============================================
-// 📦 CUSTOMER ORDERS SECTION
+//  CUSTOMER ORDERS SECTION
 // ============================================
 
 // Place a new order
@@ -61,7 +61,7 @@ export const updateOrderStatusAfterPayment = async (orderId, updateData) => {
 
 
 // ============================================
-// 📦 CUSTOMER PROFILE SECTION
+//  CUSTOMER PROFILE SECTION
 // ============================================
 
 // Update customer profile details

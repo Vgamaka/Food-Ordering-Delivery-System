@@ -11,7 +11,7 @@ export const requestPayHereHash = async (orderId, amount) => {
     });
     return response.data; // returns { hash: "..." }
   } catch (err) {
-    console.error("❌ Failed to get hash from payment-service:", err.message);
+    console.error(" Failed to get hash from payment-service:", err.message);
     throw err;
   }
 };

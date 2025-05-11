@@ -94,7 +94,7 @@ export default function Profile() {
     try {
       await updateProfile(user.id, {
         ...form,
-        location: JSON.stringify(form.location), // ✅ send as string
+        location: JSON.stringify(form.location), 
       });
       console.log("📍 Sending updated form data:", form);
       toast.success("Profile updated!");
@@ -119,7 +119,7 @@ export default function Profile() {
   // ─── Logout ───────────────────────────────────────────────────────────
   const handleLogout = () => {
     localStorage.clear();
-    navigate("/login");   // or "/" if your login route is the home page
+    navigate("/login");   
   };
   if (loading) {
     return (
